@@ -1,3 +1,0 @@
-class UI_CONST {
-
-}
