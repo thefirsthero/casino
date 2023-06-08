@@ -57,4 +57,11 @@ number of popular features:
 * Loading States
 * Error Handling
 
+## To Run
+
+* flutter clean
+* flutter pub get
+* flutter pub run build_runner build (not in this code but others)
+* flutter run
+
 Coded with ❤️ by <a href="https://www.instaflutter.com">Instaflutter</a>.
