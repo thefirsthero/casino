@@ -180,7 +180,7 @@ class _SignUpState extends State<SignUpScreen> {
                               decoration: getInputDecoration(
                                   hint: 'First Name',
                                   darkMode: isDarkMode(context),
-                                  errorColor: Theme.of(context).errorColor),
+                                  errorColor: Theme.of(context).colorScheme.error),
                             ),
                           ),
                           Padding(
@@ -196,7 +196,7 @@ class _SignUpState extends State<SignUpScreen> {
                               decoration: getInputDecoration(
                                   hint: 'Last Name',
                                   darkMode: isDarkMode(context),
-                                  errorColor: Theme.of(context).errorColor),
+                                  errorColor: Theme.of(context).colorScheme.error),
                             ),
                           ),
                           Padding(
@@ -212,7 +212,7 @@ class _SignUpState extends State<SignUpScreen> {
                               decoration: getInputDecoration(
                                   hint: 'Email',
                                   darkMode: isDarkMode(context),
-                                  errorColor: Theme.of(context).errorColor),
+                                  errorColor: Theme.of(context).colorScheme.error),
                             ),
                           ),
                           Padding(
@@ -232,7 +232,7 @@ class _SignUpState extends State<SignUpScreen> {
                               decoration: getInputDecoration(
                                   hint: 'Password',
                                   darkMode: isDarkMode(context),
-                                  errorColor: Theme.of(context).errorColor),
+                                  errorColor: Theme.of(context).colorScheme.error),
                             ),
                           ),
                           Padding(
@@ -257,7 +257,7 @@ class _SignUpState extends State<SignUpScreen> {
                               decoration: getInputDecoration(
                                   hint: 'Confirm Password',
                                   darkMode: isDarkMode(context),
-                                  errorColor: Theme.of(context).errorColor),
+                                  errorColor: Theme.of(context).colorScheme.error),
                             ),
                           ),
                           Padding(

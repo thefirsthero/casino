@@ -111,7 +111,7 @@ class _LoginScreen extends State<LoginScreen> {
                               decoration: getInputDecoration(
                                   hint: 'Email Address',
                                   darkMode: isDarkMode(context),
-                                  errorColor: Theme.of(context).errorColor)),
+                                  errorColor: Theme.of(context).colorScheme.error)),
                         ),
                         Padding(
                           padding: const EdgeInsets.only(
@@ -132,7 +132,7 @@ class _LoginScreen extends State<LoginScreen> {
                               decoration: getInputDecoration(
                                   hint: 'Password',
                                   darkMode: isDarkMode(context),
-                                  errorColor: Theme.of(context).errorColor)),
+                                  errorColor: Theme.of(context).colorScheme.error)),
                         ),
 
                         /// forgot password text, navigates user to ResetPasswordScreen

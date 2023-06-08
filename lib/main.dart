@@ -68,9 +68,9 @@ class MyAppState extends State<MyApp> with WidgetsBindingObserver {
           home: Scaffold(
         body: Container(
           color: Colors.white,
-          child: Center(
+          child: const Center(
               child: Column(
-            children: const [
+            children: [
               Icon(
                 Icons.error_outline,
                 color: Colors.red,
