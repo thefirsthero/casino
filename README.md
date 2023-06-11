@@ -64,4 +64,9 @@ number of popular features:
 * flutter pub run build_runner build (not in this code but others)
 * flutter run
 
+## To Get Auth Working
+
+* Follow this tutorial `https://youtu.be/_3W-JuIVFlg`
+* Read this article `https://instaflutter.com/docs/documentation/firebase-integration/enable-firebase-storage/` for setting up the storage component for uploading data like profile pictures & audio/video to firebase
+
 Coded with ❤️ by <a href="https://www.instaflutter.com">Instaflutter</a>.
