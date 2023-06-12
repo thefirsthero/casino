@@ -50,7 +50,7 @@ class DrawerWidget extends StatelessWidget {
             ListView(
               shrinkWrap: true,
               padding: EdgeInsets.zero,
-              physics: NeverScrollableScrollPhysics(),
+              physics: const NeverScrollableScrollPhysics(),
               children: [
                 ListTile(
                   title: Text(
