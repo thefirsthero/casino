@@ -52,7 +52,22 @@ class _HomeState extends State<HomeScreen> {
               isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
           centerTitle: true,
         ),
-        body: const Center(child: Text('Will put stuff here soon')),
+        body: const Center(
+            child: Column(
+          mainAxisAlignment:
+              MainAxisAlignment.center, // Align column to the center vertically
+
+          children: [
+            // Temporary lines explaining the project
+            Text(
+                'The traditional lottery is pick 6 numbers from the range [1,59]'),
+            Text('Your odds of winning are approximately 1 in 45,057,474'),
+            Text("The Fairman's lottery is pick 6 numbers from the range [1,39]"),
+            Text('Your odds of winning here are approximately 1 in  575,757'),
+            Text(
+                'Increasing your adds of winning by approximately 1297.37 times'),
+          ],
+        )),
       ),
     );
   }
