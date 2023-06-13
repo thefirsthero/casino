@@ -46,7 +46,8 @@ function generateRandomNumbers() {
  *  complete.
  */
 exports.populateLotteryEvents = functions.pubsub
-// Run every Tuesday, Thursday, & Sunday at 21:00 (South African Standard Time)
+    // Run every Tuesday, Thursday, & Sunday at
+    // 21:00 (South African Standard Time)
     .schedule("00 21 * * 2,4,7")
     .timeZone("Africa/Johannesburg")
     .onRun(async (context) => {
@@ -55,12 +56,18 @@ exports.populateLotteryEvents = functions.pubsub
       const name = generateRandomName();
       const winningNumbers = generateRandomNumbers();
 
+      // Determine the day of the draw
+      const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday",
+        "Thursday", "Friday", "Saturday"];
+      const currentDay = daysOfWeek[currentDateTime.getDay()];
+
       // Create a new document in the 'lotteryEvents' collection
       const lotteryEvent = {
         date: currentDateTime,
         name: name,
         winningNumbers: winningNumbers,
         amountSoFar: 0, // Initialize the amount of money to 0
+        dayOfDraw: currentDay, // Add the day of the draw
       };
 
       // Add the new document to the 'lotteryEvents' collection
