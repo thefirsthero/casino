@@ -70,19 +70,19 @@ class _LotteryState extends State<LotteryScreen> {
               // Temporary lines explaining the project
               ElevatedButton(
                 onPressed: generateRandomNumbers,
-                child: Text('Generate Numbers'),
+                child: const Text('Generate Numbers'),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               const Text(
                 'Random Numbers:',
                 style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Text(
                 numbers.isNotEmpty
                     ? '${user.fullName()} rolled: ${numbers.join(', ')}'
                     : 'No numbers generated',
-                style: TextStyle(fontSize: 16.0),
+                style: const TextStyle(fontSize: 16.0),
               ),
             ],
           ),
