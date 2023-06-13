@@ -23,14 +23,16 @@ function generateRandomName() {
 }
 
 /**
- * Generates an array of 4 random numbers between 1 and 29.
+ * Generates an array of random numbers within the specified range.
+ * @param {number} count The number of random numbers to generate.
+ * @param {number} min The minimum value of the range.
+ * @param {number} max The maximum value of the range.
  * @return {number[]} The array of generated random numbers.
  */
-function generateRandomNumbers() {
-  // Generate 4 random numbers between 1 and 29
+function generateRandomNumbers(count, min, max) {
   const numbers = [];
-  while (numbers.length < 4) {
-    const num = Math.floor(Math.random() * 29) + 1;
+  while (numbers.length < count) {
+    const num = Math.floor(Math.random() * (max - min + 1)) + min;
     if (!numbers.includes(num)) {
       numbers.push(num);
     }
@@ -46,20 +48,32 @@ function generateRandomNumbers() {
  *  complete.
  */
 exports.populateLotteryEvents = functions.pubsub
-    // Run every Tuesday, Thursday, & Sunday at
-    // 21:00 (South African Standard Time)
+    // Run every Tuesday, Thursday, & Sunday at 21:00 (South African
+    //  Standard Time)
     .schedule("00 21 * * 2,4,7")
     .timeZone("Africa/Johannesburg")
     .onRun(async (context) => {
       // Generate the data for the new entry
       const currentDateTime = admin.firestore.Timestamp.now().toDate();
       const name = generateRandomName();
-      const winningNumbers = generateRandomNumbers();
 
       // Determine the day of the draw
       const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday",
         "Thursday", "Friday", "Saturday"];
       const currentDay = daysOfWeek[currentDateTime.getDay()];
+
+      // Generate the random numbers based on the day of the draw
+      let winningNumbers;
+      if (currentDay === "Tuesday") {
+        winningNumbers = generateRandomNumbers(4, 1, 29);
+      } else if (currentDay === "Wednesday") {
+        winningNumbers = generateRandomNumbers(3, 1, 39);
+      } else if (currentDay === "Thursday") {
+        winningNumbers = generateRandomNumbers(2, 1, 49);
+      } else {
+        console.log("No lottery event for the current day:", currentDay);
+        return null;
+      }
 
       // Create a new document in the 'lotteryEvents' collection
       const lotteryEvent = {
@@ -68,6 +82,10 @@ exports.populateLotteryEvents = functions.pubsub
         winningNumbers: winningNumbers,
         amountSoFar: 0, // Initialize the amount of money to 0
         dayOfDraw: currentDay, // Add the day of the draw
+        minRange: 1, // Minimum value of the range
+        // Maximum value of the range
+        // eslint-disable-next-line max-len
+        maxRange: winningNumbers.length === 4 ? 29 : winningNumbers.length === 3 ? 39 : 49, // eslint-disable-next-line max-len
       };
 
       // Add the new document to the 'lotteryEvents' collection
