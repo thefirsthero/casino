@@ -46,22 +46,21 @@ function generateRandomNumbers() {
  *  complete.
  */
 exports.populateLotteryEvents = functions.pubsub
-    .schedule("every 1 minutes")
+// Run every Tuesday, Thursday, & Sunday at 21:00 (South African Standard Time)
+    .schedule("00 21 * * 2,4,7")
+    .timeZone("Africa/Johannesburg")
     .onRun(async (context) => {
-      // Generate the data for the new entry
-      const currentDateTime = admin.firestore.Timestamp.now();
+      const currentDateTime = admin.firestore.Timestamp.now().toDate();
       const name = generateRandomName();
       const winningNumbers = generateRandomNumbers();
 
-      // Create a new document in the 'lotteryEvents' collection
       const lotteryEvent = {
         date: currentDateTime,
         name: name,
         winningNumbers: winningNumbers,
       };
 
-      // Add the new document to the 'lotteryEvents' collection
       await db.collection("lotteryEvents").add(lotteryEvent);
-
-      console.log("Lottery event added to Firestore");
+      console.log("Lottery event added:", lotteryEvent);
+      return null;
     });
