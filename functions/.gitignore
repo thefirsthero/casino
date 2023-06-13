@@ -1,0 +1,3 @@
+# ignoring the venv folder when pushing to github
+# one will install dependencies using pip install -r requirements.txt
+venv
