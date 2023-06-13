@@ -60,6 +60,7 @@ exports.populateLotteryEvents = functions.pubsub
         date: currentDateTime,
         name: name,
         winningNumbers: winningNumbers,
+        amountSoFar: 0, // Initialize the amount of money to 0
       };
 
       // Add the new document to the 'lotteryEvents' collection
