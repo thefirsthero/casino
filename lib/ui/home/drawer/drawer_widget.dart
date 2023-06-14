@@ -6,6 +6,7 @@ import 'package:flutter_login_screen/model/user.dart';
 import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_login_screen/ui/auth/authentication_bloc.dart';
 import 'package:flutter_login_screen/ui/lottery_draw/lottery_screen.dart';
+import 'package:flutter_login_screen/ui/about/about_screen.dart';
 
 class DrawerWidget extends StatelessWidget {
   final User user;
@@ -96,10 +97,32 @@ class DrawerWidget extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    push(context, LotteryScreen(user: user)); // TEMP NAVIGATION CODE. MUST CHANGE TO BLOC!!!
+                    push(context, LotteryScreen(user: user));
                   },
                 ),
-
+                // about button
+                ListTile(
+                  title: Text(
+                    'About',
+                    style: TextStyle(
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  leading: Transform.rotate(
+                    angle: pi / 1,
+                    child: Icon(
+                      Icons.info,
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  onTap: () {
+                    push(context, AboutPage(user: user));
+                  },
+                ),
               ],
             ),
           ],

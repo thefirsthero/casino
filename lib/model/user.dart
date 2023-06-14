@@ -9,6 +9,8 @@ class User {
 
   String lastName;
 
+  int credits;
+
   String userID;
 
   String profilePictureURL;
@@ -19,6 +21,7 @@ class User {
       {this.email = '',
       this.firstName = '',
       this.lastName = '',
+      this.credits = 0,
       this.userID = '',
       this.profilePictureURL = ''})
       : appIdentifier =
@@ -31,6 +34,7 @@ class User {
         email: parsedJson['email'] ?? '',
         firstName: parsedJson['firstName'] ?? '',
         lastName: parsedJson['lastName'] ?? '',
+        credits : 0,
         userID: parsedJson['id'] ?? parsedJson['userID'] ?? '',
         profilePictureURL: parsedJson['profilePictureURL'] ?? '');
   }
@@ -40,6 +44,7 @@ class User {
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
+      'credits': 0,
       'id': userID,
       'profilePictureURL': profilePictureURL,
       'appIdentifier': appIdentifier
