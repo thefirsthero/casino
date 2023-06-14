@@ -47,7 +47,7 @@ class _LotteryState extends State<LotteryScreen> {
 
         appBar: AppBar(
           title: Text(
-            'Home',
+            'Play Lottery',
             style: TextStyle(
                 color: isDarkMode(context)
                     ? Colors.grey.shade50
