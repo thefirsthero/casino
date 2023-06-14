@@ -26,6 +26,7 @@ dependencies:
   flutter_bloc: ^8.1.1
   url_launcher: ^6.1.6
   file_picker: ^5.2.2
+  intl: ^0.18.1
 
   flutter:
     sdk: flutter
