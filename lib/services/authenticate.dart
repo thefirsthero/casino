@@ -125,6 +125,7 @@ class FireStoreUtils {
           email: userData['email'] ?? '',
           firstName: firstName,
           lastName: lastName,
+          credits: 0,
           profilePictureURL: userData['picture']['data']['url'] ?? '',
           userID: authResult.user?.uid ?? '');
       String? errorMessage = await createNewUser(user);
@@ -165,6 +166,7 @@ class FireStoreUtils {
           firstName: firstName,
           userID: result.user?.uid ?? '',
           lastName: lastName,
+          credits: 0,
           profilePictureURL: profilePicUrl);
       String? errorMessage = await createNewUser(user);
       if (errorMessage == null) {
@@ -238,6 +240,7 @@ class FireStoreUtils {
           lastName: lastName!.trim().isNotEmpty ? lastName.trim() : 'User',
           email: '',
           profilePictureURL: profileImageUrl,
+          credits: 0,
           userID: userCredential.user?.uid ?? '');
       String? errorMessage = await createNewUser(user);
       if (errorMessage == null) {
@@ -286,6 +289,7 @@ class FireStoreUtils {
         firstName: appleIdCredential.fullName?.givenName ?? '',
         profilePictureURL: '',
         userID: authResult.user?.uid ?? '',
+        credits: 0,
         lastName: appleIdCredential.fullName?.familyName ?? '',
       );
       String? errorMessage = await createNewUser(user);

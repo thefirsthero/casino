@@ -44,42 +44,39 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyC5vDLEY9Oi1UorTsof0Jx6TZdt1wVRfsY',
-    appId: '1:724928109914:web:363efbabeebd04fa5b2763',
-    messagingSenderId: '724928109914',
-    projectId: 'flutter-freebies',
-    authDomain: 'flutter-freebies.firebaseapp.com',
-    storageBucket: 'flutter-freebies.appspot.com',
-    measurementId: 'G-2J3B19Q48B',
+    apiKey: 'AIzaSyDpBagPQvh0X2mTTnabZPo1HS_TdOsFNVA',
+    appId: '1:70001102720:web:fbb502c3480fb2be4d7b65',
+    messagingSenderId: '70001102720',
+    projectId: 'lottery-app-16986',
+    authDomain: 'lottery-app-16986.firebaseapp.com',
+    storageBucket: 'lottery-app-16986.appspot.com',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA00kk1mEFrpbfxrKgt0WwcaviwyydyoTY',
-    appId: '1:724928109914:android:8d659462d0783cdf5b2763',
-    messagingSenderId: '724928109914',
-    projectId: 'flutter-freebies',
-    storageBucket: 'flutter-freebies.appspot.com',
+    apiKey: 'AIzaSyDpUd74LMIabnqVuf9qLcUsa4i37DJ0mqQ',
+    appId: '1:70001102720:android:c4b0327effceb13c4d7b65',
+    messagingSenderId: '70001102720',
+    projectId: 'lottery-app-16986',
+    storageBucket: 'lottery-app-16986.appspot.com',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyBYvI2RbbDbqzK3UmSIlPW7QmIHKb97K6c',
-    appId: '1:724928109914:ios:c383c79f215bd1845b2763',
-    messagingSenderId: '724928109914',
-    projectId: 'flutter-freebies',
-    storageBucket: 'flutter-freebies.appspot.com',
-    iosClientId:
-        '724928109914-1adjc73c1se3jr5shdiuntaujkqgvvre.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAu1iKSe5EW_wqtF404163j8XlNeCGGTLQ',
+    appId: '1:70001102720:ios:3e989361b1b5e9b54d7b65',
+    messagingSenderId: '70001102720',
+    projectId: 'lottery-app-16986',
+    storageBucket: 'lottery-app-16986.appspot.com',
+    iosClientId: '70001102720-efo9virnfne6rtugd6aak9qtleakn28v.apps.googleusercontent.com',
     iosBundleId: 'com.instaflutter.freeloginscreen',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
-    apiKey: 'AIzaSyBYvI2RbbDbqzK3UmSIlPW7QmIHKb97K6c',
-    appId: '1:724928109914:ios:14570b773437fae25b2763',
-    messagingSenderId: '724928109914',
-    projectId: 'flutter-freebies',
-    storageBucket: 'flutter-freebies.appspot.com',
-    iosClientId:
-        '724928109914-g3uv4qacao8h2u7an3sdtliqe18c19mc.apps.googleusercontent.com',
+    apiKey: 'AIzaSyAu1iKSe5EW_wqtF404163j8XlNeCGGTLQ',
+    appId: '1:70001102720:ios:b6bfd7b3585429b14d7b65',
+    messagingSenderId: '70001102720',
+    projectId: 'lottery-app-16986',
+    storageBucket: 'lottery-app-16986.appspot.com',
+    iosClientId: '70001102720-80o4oj28sebov498nr66gfsa1j7nej13.apps.googleusercontent.com',
     iosBundleId: 'com.instaflutter.freeloginscreen.mac',
   );
 }
