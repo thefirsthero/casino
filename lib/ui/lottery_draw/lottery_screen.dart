@@ -99,8 +99,16 @@ class _LotteryState extends State<LotteryScreen> {
     });
   }
 
-  Future<void> performDatabaseUpdate() async {
+  Future<void> performDatabaseUpdate(String dayOfDraw) async {
     try {
+
+      if (selectedNumbers.length != getRequiredNumberOfNumbers(dayOfDraw)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Please select the correct number of numbers.')),
+      );
+      return;
+    }
+
       final selectedNumbersSorted = selectedNumbers.toList()..sort();
       final lotteryEventId = await getLotteryEventId();
       final userId = user.userID;
@@ -231,7 +239,7 @@ class _LotteryState extends State<LotteryScreen> {
                                   // upon final confirmation update the database and take user back to base lottery screen.
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
-                                  performDatabaseUpdate();
+                                  performDatabaseUpdate(dayOfDraw);
                                 },
                                 child: const Text('Confirm'),
                               ),
