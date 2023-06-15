@@ -34,7 +34,7 @@ class User {
         email: parsedJson['email'] ?? '',
         firstName: parsedJson['firstName'] ?? '',
         lastName: parsedJson['lastName'] ?? '',
-        credits : 0,
+        credits : parsedJson['credits'] ?? 0,
         userID: parsedJson['id'] ?? parsedJson['userID'] ?? '',
         profilePictureURL: parsedJson['profilePictureURL'] ?? '');
   }
@@ -44,7 +44,7 @@ class User {
       'email': email,
       'firstName': firstName,
       'lastName': lastName,
-      'credits': 0,
+      'credits': credits,
       'id': userID,
       'profilePictureURL': profilePictureURL,
       'appIdentifier': appIdentifier
