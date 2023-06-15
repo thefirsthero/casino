@@ -90,32 +90,35 @@ class _LotteryState extends State<LotteryScreen> {
     });
   }
 
-  void enterLottery() async {
-    final dayOfDraw = await getDayOfDraw();
-    if (dayOfDraw.isEmpty) {
-      showDialog(
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            title: const Text('Error'),
-            content: const Text('No lottery event available.'),
-            actions: [
-              ElevatedButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: const Text('OK'),
-              ),
-            ],
-          );
-        },
-      );
-    } else {
-      int range = dayOfDraw == 'Sunday' ? 39 : dayOfDraw == 'Thursday' ? 29 : 49;
-      generateRandomNumbers(range);
-      showNumberSelectionPopup(dayOfDraw);
-    }
+void enterLottery() async {
+  final dayOfDraw = await getDayOfDraw();
+  if (dayOfDraw.isEmpty) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: const Text('Error'),
+          content: const Text('No lottery event available.'),
+          actions: [
+            ElevatedButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  } else {
+    int range = dayOfDraw == 'Sunday' ? 49 : dayOfDraw == 'Thursday' ? 39 : 29;
+    generateRandomNumbers(range);
+    setState(() {
+      selectedNumbers = [];
+    }); // Reset selectedNumbers to an empty list
+    showNumberSelectionPopup(dayOfDraw);
   }
+}
 
   void showNumberSelectionPopup(String dayOfDraw) {
     showDialog(
@@ -267,7 +270,21 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
     return widget.selectedNumbers.contains(number);
   }
 
+  bool isNumberDisabled(int number) {
+    int range = widget.dayOfDraw == 'Sunday' ? 49 : widget.dayOfDraw == 'Thursday' ? 39 : 29;
+    return range == 29 && number > range || range == 39 && number > range || range == 49 && number > range;
+  }
+
   void toggleNumberSelection(int number) {
+    if (isNumberDisabled(number)) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('You can only select numbers within the current range.'),
+        ),
+      );
+      return;
+    }
+
     List<int> updatedSelection = List<int>.from(widget.selectedNumbers);
 
     if (isNumberSelected(number)) {
@@ -315,6 +332,7 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
       children: List<Widget>.generate(49, (int index) {
         final number = index + 1;
         final isSelected = isNumberSelected(number);
+        final isDisabled = isNumberDisabled(number);
 
         return GestureDetector(
           onTap: () {
@@ -324,14 +342,14 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
             width: 40,
             height: 40,
             decoration: BoxDecoration(
-              color: isSelected ? Colors.blue : Colors.grey,
+              color: isDisabled ? Colors.grey[700] : (isSelected ? Colors.blue : Colors.grey),
               borderRadius: BorderRadius.circular(8.0),
             ),
             child: Center(
               child: Text(
                 number.toString(),
                 style: TextStyle(
-                  color: isSelected ? Colors.white : Colors.black,
+                  color: isDisabled ? Colors.grey[300] : (isSelected ? Colors.white : Colors.black),
                 ),
               ),
             ),
@@ -341,3 +359,4 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
     );
   }
 }
+
