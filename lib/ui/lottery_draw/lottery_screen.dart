@@ -1,7 +1,7 @@
 import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_login_screen/model/user.dart';
 import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_login_screen/ui/home/drawer/drawer_widget.dart';
@@ -23,6 +23,7 @@ class _LotteryState extends State<LotteryScreen> {
   late DateTime nextDrawDateTime;
   late Timer _timer;
   String countdown = '';
+  List<int> selectedNumbers = [];
 
   @override
   void initState() {
@@ -50,7 +51,7 @@ class _LotteryState extends State<LotteryScreen> {
     }
 
     final nextDrawDate = now.add(Duration(days: daysToAdd));
-    nextDrawDateTime = DateTime(nextDrawDate.year, nextDrawDate.month, nextDrawDate.day, 21, 0, 0);
+    nextDrawDateTime = DateTime(nextDrawDate.year, nextDrawDate.month, nextDrawDate.day, 20, 30, 0);
   }
 
   void startTimer() {
@@ -67,10 +68,122 @@ class _LotteryState extends State<LotteryScreen> {
     });
   }
 
-  void generateRandomNumbers() {
+  Future<String> getDayOfDraw() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('lotteryEvents')
+        .orderBy('date', descending: true)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final latestEvent = querySnapshot.docs.first;
+      final dayOfDraw = latestEvent.get('dayOfDraw');
+      return dayOfDraw;
+    }
+
+    return '';
+  }
+
+  void generateRandomNumbers(int range) {
     setState(() {
-      numbers = rng.generateNumbers(5, 1, 39);
+      numbers = rng.generateNumbers(range, 1, range == 29 ? 29 : range == 39 ? 39 : 49);
     });
+  }
+
+  void enterLottery() async {
+    final dayOfDraw = await getDayOfDraw();
+    if (dayOfDraw.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text('No lottery event available.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      int range = dayOfDraw == 'Sunday' ? 39 : dayOfDraw == 'Thursday' ? 29 : 49;
+      generateRandomNumbers(range);
+      showNumberSelectionPopup(dayOfDraw);
+    }
+  }
+
+  void showNumberSelectionPopup(String dayOfDraw) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            return AlertDialog(
+              title: Text('Please select ${dayOfDraw == 'Sunday' ? '2' : dayOfDraw == 'Thursday' ? '3' : '4'} numbers:'),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  NumberSelectionWidget(dayOfDraw, selectedNumbers, (selected) {
+                    setState(() {
+                      selectedNumbers = selected;
+                    });
+                  }),
+                  const SizedBox(height: 10),
+                  Text(
+                    'Numbers currently selected: ${selectedNumbers.join(', ')}',
+                    style: TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ],
+              ),
+              actions: [
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                  },
+                  child: const Text('Go Back'),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    showDialog(
+                      context: context,
+                      builder: (BuildContext context) {
+                        return AlertDialog(
+                          title: const Text('Confirmation'),
+                          content: const Text('Are you sure you want to enter the lottery? This action cannot be undone.'),
+                          actions: [
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                                // Perform database update and credit deduction here
+                                // Once the update is confirmed, return to the lottery screen
+                                // and display a success message.
+                              },
+                              child: const Text('Confirm'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
+                              child: const Text('Cancel'),
+                            ),
+                          ],
+                        );
+                      },
+                    );
+                  },
+                  child: const Text('Confirm Selection'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   @override
@@ -83,7 +196,6 @@ class _LotteryState extends State<LotteryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       drawer: DrawerWidget(user: user),
-
       appBar: AppBar(
         title: Text(
           'Play Lottery',
@@ -111,32 +223,8 @@ class _LotteryState extends State<LotteryScreen> {
                 ),
               ),
             ElevatedButton(
-              onPressed: () {
-                final now = DateTime.now();
-                final difference = nextDrawDateTime.difference(now);
-                if (difference.inHours <= 1 || difference.inHours >= 23) {
-                  showDialog(
-                    context: context,
-                    builder: (BuildContext context) {
-                      return AlertDialog(
-                        title: const Text('Error'),
-                        content: const Text('You cannot enter 1 hour before or 1 hour after the draw.'),
-                        actions: [
-                          ElevatedButton(
-                            onPressed: () {
-                              Navigator.of(context).pop();
-                            },
-                            child: const Text('OK'),
-                          ),
-                        ],
-                      );
-                    },
-                  );
-                } else {
-                  generateRandomNumbers();
-                }
-              },
-              child: const Text('Generate Numbers'),
+              onPressed: enterLottery,
+              child: const Text('Enter Lottery'),
             ),
             const SizedBox(height: 10),
             const Text(
@@ -145,12 +233,111 @@ class _LotteryState extends State<LotteryScreen> {
             ),
             const SizedBox(height: 10),
             Text(
-              numbers.isNotEmpty ? '${user.fullName()} rolled: ${numbers.join(', ')}' : 'No numbers generated',
-              style: const TextStyle(fontSize: 16.0),
+              numbers.isNotEmpty ? numbers.join(' - ') : 'No numbers generated yet',
+              style: const TextStyle(fontSize: 18.0),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class NumberSelectionWidget extends StatefulWidget {
+  final String dayOfDraw;
+  final List<int> selectedNumbers;
+  final Function(List<int>) onSelectionChanged;
+
+  NumberSelectionWidget(this.dayOfDraw, this.selectedNumbers, this.onSelectionChanged);
+
+  @override
+  _NumberSelectionWidgetState createState() => _NumberSelectionWidgetState();
+}
+
+class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
+  late List<int> availableNumbers;
+
+  @override
+  void initState() {
+    super.initState();
+    availableNumbers = List<int>.generate(49, (index) => index + 1);
+  }
+
+  bool isNumberSelected(int number) {
+    return widget.selectedNumbers.contains(number);
+  }
+
+  void toggleNumberSelection(int number) {
+    List<int> updatedSelection = List<int>.from(widget.selectedNumbers);
+
+    if (isNumberSelected(number)) {
+      updatedSelection.remove(number);
+    } else {
+      if (widget.dayOfDraw == 'Sunday' && updatedSelection.length >= 2) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('You can only select 2 numbers for Sunday draws.'),
+          ),
+        );
+        return;
+      }
+
+      if (widget.dayOfDraw == 'Thursday' && updatedSelection.length >= 3) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('You can only select 3 numbers for Thursday draws.'),
+          ),
+        );
+        return;
+      }
+
+      if (widget.dayOfDraw == 'Tuesday' && updatedSelection.length >= 4) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('You can only select 4 numbers for Tuesday draws.'),
+          ),
+        );
+        return;
+      }
+
+      updatedSelection.add(number);
+    }
+
+    widget.onSelectionChanged(updatedSelection);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Wrap(
+      alignment: WrapAlignment.center,
+      spacing: 8.0,
+      runSpacing: 8.0,
+      children: List<Widget>.generate(49, (int index) {
+        final number = index + 1;
+        final isSelected = isNumberSelected(number);
+
+        return GestureDetector(
+          onTap: () {
+            toggleNumberSelection(number);
+          },
+          child: Container(
+            width: 40,
+            height: 40,
+            decoration: BoxDecoration(
+              color: isSelected ? Colors.blue : Colors.grey,
+              borderRadius: BorderRadius.circular(8.0),
+            ),
+            child: Center(
+              child: Text(
+                number.toString(),
+                style: TextStyle(
+                  color: isSelected ? Colors.white : Colors.black,
+                ),
+              ),
+            ),
+          ),
+        );
+      }),
     );
   }
 }

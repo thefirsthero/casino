@@ -49,9 +49,9 @@ function generateRandomNumbers(count, min, max) {
  *  complete.
  */
 exports.populateLotteryEvents = functions.pubsub
-    // Run every Tuesday, Thursday, & Sunday at 21:00 (South African
+    // Run every Tuesday, Thursday, & Sunday at 20:30 (South African
     //  Standard Time)
-    .schedule("00 21 * * 2,4,7")
+    .schedule("30 20 * * 2,4,7")
     .timeZone("Africa/Johannesburg")
     .onRun(async (context) => {
       // Generate the data for the new entry
