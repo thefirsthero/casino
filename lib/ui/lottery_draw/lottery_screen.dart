@@ -51,7 +51,8 @@ class _LotteryState extends State<LotteryScreen> {
     }
 
     final nextDrawDate = now.add(Duration(days: daysToAdd));
-    nextDrawDateTime = DateTime(nextDrawDate.year, nextDrawDate.month, nextDrawDate.day, 20, 30, 0);
+    nextDrawDateTime = DateTime(
+        nextDrawDate.year, nextDrawDate.month, nextDrawDate.day, 20, 30, 0);
   }
 
   void startTimer() {
@@ -63,7 +64,8 @@ class _LotteryState extends State<LotteryScreen> {
       }
       final difference = nextDrawDateTime.difference(now);
       setState(() {
-        countdown = '${difference.inHours}:${(difference.inMinutes % 60).toString().padLeft(2, '0')}:${(difference.inSeconds % 60).toString().padLeft(2, '0')}';
+        countdown =
+            '${difference.inHours}:${(difference.inMinutes % 60).toString().padLeft(2, '0')}:${(difference.inSeconds % 60).toString().padLeft(2, '0')}';
       });
     });
   }
@@ -86,43 +88,50 @@ class _LotteryState extends State<LotteryScreen> {
 
   void generateRandomNumbers(int range) {
     setState(() {
-      numbers = rng.generateNumbers(range, 1, range == 29 ? 29 : range == 39 ? 39 : 49);
+      numbers = rng.generateNumbers(
+          range,
+          1,
+          range == 29
+              ? 29
+              : range == 39
+                  ? 39
+                  : 49);
     });
   }
 
   Future<void> performDatabaseUpdate() async {
-  try {
-    final selectedNumbersSorted = selectedNumbers.toList()..sort();
-    final lotteryEventId = await getLotteryEventId();
-    final userId = user.userID;
-    final numbersPlayed = selectedNumbersSorted;
-    final datePlayed = DateTime.now();
+    try {
+      final selectedNumbersSorted = selectedNumbers.toList()..sort();
+      final lotteryEventId = await getLotteryEventId();
+      final userId = user.userID;
+      final numbersPlayed = selectedNumbersSorted;
+      final datePlayed = DateTime.now();
 
-    // Update the database with the entry
-    await FirebaseFirestore.instance.collection('gamesPlayed').add({
-      'correctNumbers': [],
-      'lotteryEventID': lotteryEventId,
-      'userID': userId,
-      'numbersPlayed': numbersPlayed,
-      'datePlayed': datePlayed,
-    });
+      // Update the database with the entry
+      await FirebaseFirestore.instance.collection('gamesPlayed').add({
+        'correctNumbers': [],
+        'lotteryEventID': lotteryEventId,
+        'userID': userId,
+        'numbersPlayed': numbersPlayed,
+        'datePlayed': datePlayed,
+      });
 
-    // Reset selectedNumbers and show a success message
-    setState(() {
-      selectedNumbers = [];
-    });
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Successfully entered the lottery!')),
-    );
-  } catch (error) {
-    print('Error: $error');
-    // Display an error message
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to enter the lottery. Please try again.')),
-    );
+      // Reset selectedNumbers and show a success message
+      setState(() {
+        selectedNumbers = [];
+      });
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Successfully entered the lottery!')),
+      );
+    } catch (error) {
+      print('Error: $error');
+      // Display an error message
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+            content: Text('Failed to enter the lottery. Please try again.')),
+      );
+    }
   }
-}
-
 
   Future<String> getLotteryEventId() async {
     final querySnapshot = await FirebaseFirestore.instance
@@ -161,7 +170,11 @@ class _LotteryState extends State<LotteryScreen> {
         },
       );
     } else {
-      int range = dayOfDraw == 'Sunday' ? 49 : dayOfDraw == 'Thursday' ? 39 : 29;
+      int range = dayOfDraw == 'Sunday'
+          ? 49
+          : dayOfDraw == 'Thursday'
+              ? 39
+              : 29;
       generateRandomNumbers(range);
       setState(() {
         selectedNumbers = [];
@@ -177,7 +190,8 @@ class _LotteryState extends State<LotteryScreen> {
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
-              title: Text('Please select ${dayOfDraw == 'Sunday' ? '2' : dayOfDraw == 'Thursday' ? '3' : '4'} numbers:'),
+              title: Text(
+                  'Please select ${dayOfDraw == 'Sunday' ? '2' : dayOfDraw == 'Thursday' ? '3' : '4'} numbers:'),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -202,32 +216,43 @@ class _LotteryState extends State<LotteryScreen> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Confirmation'),
-                          content: const Text('Are you sure you want to enter the lottery? This action cannot be undone.'),
-                          actions: [
-                            ElevatedButton(
-                              onPressed: () {
-                                // upon final confirmation update the database and take user back to base lottery screen.
-                                Navigator.of(context).pop();
-                                Navigator.of(context).pop();
-                                performDatabaseUpdate();
-                              },
-                              child: const Text('Confirm'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop();
-                              },
-                              child: const Text('Cancel'),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+                    if (selectedNumbers.length ==
+                        getRequiredNumberOfNumbers(dayOfDraw)) {
+                      showDialog(
+                        context: context,
+                        builder: (BuildContext context) {
+                          return AlertDialog(
+                            title: const Text('Confirmation'),
+                            content: const Text(
+                                'Are you sure you want to enter the lottery? This action cannot be undone.'),
+                            actions: [
+                              ElevatedButton(
+                                onPressed: () {
+                                  // upon final confirmation update the database and take user back to base lottery screen.
+                                  Navigator.of(context).pop();
+                                  Navigator.of(context).pop();
+                                  performDatabaseUpdate();
+                                },
+                                child: const Text('Confirm'),
+                              ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('Cancel'),
+                              ),
+                            ],
+                          );
+                        },
+                      );
+                    } else {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(
+                          content: Text(
+                              'Please select the correct number of numbers.'),
+                        ),
+                      );
+                    }
                   },
                   child: const Text('Confirm Selection'),
                 ),
@@ -237,6 +262,19 @@ class _LotteryState extends State<LotteryScreen> {
         );
       },
     );
+  }
+
+  int getRequiredNumberOfNumbers(String dayOfDraw) {
+    switch (dayOfDraw) {
+      case 'Sunday':
+        return 2;
+      case 'Thursday':
+        return 3;
+      case 'Tuesday':
+        return 4;
+      default:
+        return 0;
+    }
   }
 
   @override
@@ -253,13 +291,17 @@ class _LotteryState extends State<LotteryScreen> {
         title: Text(
           'Play Lottery',
           style: TextStyle(
-            color: isDarkMode(context) ? Colors.grey.shade50 : Colors.grey.shade900,
+            color: isDarkMode(context)
+                ? Colors.grey.shade50
+                : Colors.grey.shade900,
           ),
         ),
         iconTheme: IconThemeData(
-          color: isDarkMode(context) ? Colors.grey.shade50 : Colors.grey.shade900,
+          color:
+              isDarkMode(context) ? Colors.grey.shade50 : Colors.grey.shade900,
         ),
-        backgroundColor: isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
+        backgroundColor:
+            isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
         centerTitle: true,
       ),
       body: Center(
@@ -292,7 +334,8 @@ class NumberSelectionWidget extends StatefulWidget {
   final List<int> selectedNumbers;
   final Function(List<int>) onSelectionChanged;
 
-  NumberSelectionWidget(this.dayOfDraw, this.selectedNumbers, this.onSelectionChanged);
+  NumberSelectionWidget(
+      this.dayOfDraw, this.selectedNumbers, this.onSelectionChanged);
 
   @override
   _NumberSelectionWidgetState createState() => _NumberSelectionWidgetState();
@@ -312,15 +355,22 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
   }
 
   bool isNumberDisabled(int number) {
-    int range = widget.dayOfDraw == 'Sunday' ? 49 : widget.dayOfDraw == 'Thursday' ? 39 : 29;
-    return range == 29 && number > range || range == 39 && number > range || range == 49 && number > range;
+    int range = widget.dayOfDraw == 'Sunday'
+        ? 49
+        : widget.dayOfDraw == 'Thursday'
+            ? 39
+            : 29;
+    return range == 29 && number > range ||
+        range == 39 && number > range ||
+        range == 49 && number > range;
   }
 
   void toggleNumberSelection(int number) {
     if (isNumberDisabled(number)) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text('You can only select numbers within the current range.'),
+          content:
+              Text('You can only select numbers within the current range.'),
         ),
       );
       return;
@@ -372,15 +422,20 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
       runSpacing: 8.0,
       children: availableNumbers.map((number) {
         return ElevatedButton(
-          onPressed: isNumberDisabled(number) ? null : () => toggleNumberSelection(number),
+          onPressed: isNumberDisabled(number)
+              ? null
+              : () => toggleNumberSelection(number),
           style: ElevatedButton.styleFrom(
-            primary: isNumberSelected(number) ? Colors.blue : Colors.grey.shade300,
+            primary:
+                isNumberSelected(number) ? Colors.blue : Colors.grey.shade300,
             shape: CircleBorder(),
           ),
           child: Text(
             number.toString(),
             style: TextStyle(
-              color: isNumberDisabled(number) ? Colors.grey.shade400 : Colors.grey.shade800,
+              color: isNumberDisabled(number)
+                  ? Colors.grey.shade400
+                  : Colors.grey.shade800,
               fontWeight: FontWeight.bold,
             ),
           ),
