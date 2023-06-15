@@ -104,7 +104,7 @@ class _LotteryState extends State<LotteryScreen> {
 
       if (selectedNumbers.length != getRequiredNumberOfNumbers(dayOfDraw)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Please select the correct number of numbers.')),
+        const SnackBar(content: Text('Please select the correct number of numbers.')),
       );
       return;
     }
@@ -129,13 +129,13 @@ class _LotteryState extends State<LotteryScreen> {
         selectedNumbers = [];
       });
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Successfully entered the lottery!')),
+        const SnackBar(content: Text('Successfully entered the lottery!')),
       );
     } catch (error) {
-      print('Error: $error');
+      // print('Error: $error'); // log this error
       // Display an error message
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
             content: Text('Failed to enter the lottery. Please try again.')),
       );
     }
@@ -211,7 +211,7 @@ class _LotteryState extends State<LotteryScreen> {
                   const SizedBox(height: 10),
                   Text(
                     'Numbers currently selected: ${selectedNumbers.join(', ')}',
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: const TextStyle(fontWeight: FontWeight.bold),
                   ),
                 ],
               ),
@@ -255,7 +255,7 @@ class _LotteryState extends State<LotteryScreen> {
                       );
                     } else {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        SnackBar(
+                        const SnackBar(
                           content: Text(
                               'Please select the correct number of numbers.'),
                         ),
@@ -342,8 +342,8 @@ class NumberSelectionWidget extends StatefulWidget {
   final List<int> selectedNumbers;
   final Function(List<int>) onSelectionChanged;
 
-  NumberSelectionWidget(
-      this.dayOfDraw, this.selectedNumbers, this.onSelectionChanged);
+  const NumberSelectionWidget(
+      this.dayOfDraw, this.selectedNumbers, this.onSelectionChanged, {super.key});
 
   @override
   _NumberSelectionWidgetState createState() => _NumberSelectionWidgetState();
@@ -376,7 +376,7 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
   void toggleNumberSelection(int number) {
     if (isNumberDisabled(number)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
+        const SnackBar(
           content:
               Text('You can only select numbers within the current range.'),
         ),
@@ -391,7 +391,7 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
     } else {
       if (widget.dayOfDraw == 'Sunday' && updatedSelection.length >= 2) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('You can only select 2 numbers for Sunday draws.'),
           ),
         );
@@ -400,7 +400,7 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
 
       if (widget.dayOfDraw == 'Thursday' && updatedSelection.length >= 3) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('You can only select 3 numbers for Thursday draws.'),
           ),
         );
@@ -409,7 +409,7 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
 
       if (widget.dayOfDraw == 'Tuesday' && updatedSelection.length >= 4) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
+          const SnackBar(
             content: Text('You can only select 4 numbers for Tuesday draws.'),
           ),
         );
@@ -434,9 +434,8 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
               ? null
               : () => toggleNumberSelection(number),
           style: ElevatedButton.styleFrom(
-            primary:
-                isNumberSelected(number) ? Colors.blue : Colors.grey.shade300,
-            shape: CircleBorder(),
+            backgroundColor: isNumberSelected(number) ? Colors.blue : Colors.grey.shade300,
+            shape: const CircleBorder(),
           ),
           child: Text(
             number.toString(),
