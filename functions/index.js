@@ -5,6 +5,7 @@ const faker = require("faker");
 admin.initializeApp();
 
 const db = admin.firestore();
+const lotteryEventsCollection = "lotteryEvents";
 
 /**
  * Generates a random name with a lottery theme.
@@ -48,9 +49,9 @@ function generateRandomNumbers(count, min, max) {
  *  complete.
  */
 exports.populateLotteryEvents = functions.pubsub
-    // Run every Tuesday, Thursday, & Sunday at 21:00 (South African
+    // Run every Tuesday, Thursday, & Sunday at 20:30 (South African
     //  Standard Time)
-    .schedule("00 21 * * 2,4,7")
+    .schedule("30 20 * * 2,4,7")
     .timeZone("Africa/Johannesburg")
     .onRun(async (context) => {
       // Generate the data for the new entry
@@ -58,8 +59,15 @@ exports.populateLotteryEvents = functions.pubsub
       const name = generateRandomName();
 
       // Determine the day of the draw
-      const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday",
-        "Thursday", "Friday", "Saturday"];
+      const daysOfWeek = [
+        "Sunday",
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+      ];
       const currentDay = daysOfWeek[currentDateTime.getDay()];
 
       // Generate the random numbers based on the day of the draw
@@ -85,11 +93,24 @@ exports.populateLotteryEvents = functions.pubsub
         minRange: 1, // Minimum value of the range
         // Maximum value of the range
         // eslint-disable-next-line max-len
-        maxRange: winningNumbers.length === 4 ? 29 : winningNumbers.length === 3 ? 39 : 49, // eslint-disable-next-line max-len
+        maxRange:
+          // eslint-disable-next-line max-len
+          winningNumbers.length === 4 ? 29 : winningNumbers.length === 3 ? 39 : 49, // eslint-disable-next-line max-len
+        isOngoing: true, // Set the isOngoing field to true
       };
 
+      const lotteryEventsRef = db.collection(lotteryEventsCollection);
+      const querySnapshot = await lotteryEventsRef
+          .orderBy("date", "desc")
+          .limit(1)
+          .get();
+      if (!querySnapshot.empty) {
+        const previousEvent = querySnapshot.docs[0];
+        await previousEvent.ref.update({isOngoing: false});
+      }
+
       // Add the new document to the 'lotteryEvents' collection
-      await db.collection("lotteryEvents").add(lotteryEvent);
+      await lotteryEventsRef.add(lotteryEvent);
       console.log("Lottery event added:", lotteryEvent);
       return null;
     });

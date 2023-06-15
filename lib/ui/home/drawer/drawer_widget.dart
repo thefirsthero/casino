@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_login_screen/model/user.dart';
 import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_login_screen/ui/auth/authentication_bloc.dart';
+import 'package:flutter_login_screen/ui/home/home_screen.dart';
 import 'package:flutter_login_screen/ui/lottery_draw/lottery_screen.dart';
 import 'package:flutter_login_screen/ui/about/about_screen.dart';
 
@@ -54,10 +55,10 @@ class DrawerWidget extends StatelessWidget {
               padding: EdgeInsets.zero,
               physics: const NeverScrollableScrollPhysics(),
               children: [
-                // logout button
+                // home button
                 ListTile(
                   title: Text(
-                    'Logout',
+                    'Home',
                     style: TextStyle(
                       color: isDarkMode(context)
                           ? Colors.grey.shade50
@@ -65,19 +66,20 @@ class DrawerWidget extends StatelessWidget {
                     ),
                   ),
                   leading: Transform.rotate(
-                    angle: pi / 1,
+                    angle: 0,
                     child: Icon(
-                      Icons.exit_to_app,
+                      Icons.home,
                       color: isDarkMode(context)
                           ? Colors.grey.shade50
                           : Colors.grey.shade900,
                     ),
                   ),
                   onTap: () {
-                    context.read<AuthenticationBloc>().add(LogoutEvent());
+                    // Replace with the route to your home page
+                    push(context, HomeScreen(user: user));
                   },
                 ),
-                // play lottery button (test button)
+                // play lottery button
                 ListTile(
                   title: Text(
                     'Play Lottery',
@@ -111,7 +113,7 @@ class DrawerWidget extends StatelessWidget {
                     ),
                   ),
                   leading: Transform.rotate(
-                    angle: pi / 1,
+                    angle: 0,
                     child: Icon(
                       Icons.info,
                       color: isDarkMode(context)
@@ -121,6 +123,29 @@ class DrawerWidget extends StatelessWidget {
                   ),
                   onTap: () {
                     push(context, AboutPage(user: user));
+                  },
+                ),
+                // logout button
+                ListTile(
+                  title: Text(
+                    'Logout',
+                    style: TextStyle(
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  leading: Transform.rotate(
+                    angle: pi / 1,
+                    child: Icon(
+                      Icons.exit_to_app,
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  onTap: () {
+                    context.read<AuthenticationBloc>().add(LogoutEvent());
                   },
                 ),
               ],
