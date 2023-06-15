@@ -90,35 +90,85 @@ class _LotteryState extends State<LotteryScreen> {
     });
   }
 
-void enterLottery() async {
-  final dayOfDraw = await getDayOfDraw();
-  if (dayOfDraw.isEmpty) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          title: const Text('Error'),
-          content: const Text('No lottery event available.'),
-          actions: [
-            ElevatedButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  } else {
-    int range = dayOfDraw == 'Sunday' ? 49 : dayOfDraw == 'Thursday' ? 39 : 29;
-    generateRandomNumbers(range);
+  Future<void> performDatabaseUpdate() async {
+  try {
+    final selectedNumbersSorted = selectedNumbers.toList()..sort();
+    final lotteryEventId = await getLotteryEventId();
+    final userId = user.userID;
+    final numbersPlayed = selectedNumbersSorted;
+    final datePlayed = DateTime.now();
+
+    // Update the database with the entry
+    await FirebaseFirestore.instance.collection('gamesPlayed').add({
+      'correctNumbers': [],
+      'lotteryEventID': lotteryEventId,
+      'userID': userId,
+      'numbersPlayed': numbersPlayed,
+      'datePlayed': datePlayed,
+    });
+
+    // Reset selectedNumbers and show a success message
     setState(() {
       selectedNumbers = [];
-    }); // Reset selectedNumbers to an empty list
-    showNumberSelectionPopup(dayOfDraw);
+    });
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Successfully entered the lottery!')),
+    );
+  } catch (error) {
+    print('Error: $error');
+    // Display an error message
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Failed to enter the lottery. Please try again.')),
+    );
   }
 }
+
+
+  Future<String> getLotteryEventId() async {
+    final querySnapshot = await FirebaseFirestore.instance
+        .collection('lotteryEvents')
+        .orderBy('date', descending: true)
+        .limit(1)
+        .get();
+
+    if (querySnapshot.docs.isNotEmpty) {
+      final latestEvent = querySnapshot.docs.first;
+      final lotteryEventId = latestEvent.id;
+      return lotteryEventId;
+    }
+
+    return '';
+  }
+
+  void enterLottery() async {
+    final dayOfDraw = await getDayOfDraw();
+    if (dayOfDraw.isEmpty) {
+      showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text('Error'),
+            content: const Text('No lottery event available.'),
+            actions: [
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text('OK'),
+              ),
+            ],
+          );
+        },
+      );
+    } else {
+      int range = dayOfDraw == 'Sunday' ? 49 : dayOfDraw == 'Thursday' ? 39 : 29;
+      generateRandomNumbers(range);
+      setState(() {
+        selectedNumbers = [];
+      }); // Reset selectedNumbers to an empty list
+      showNumberSelectionPopup(dayOfDraw);
+    }
+  }
 
   void showNumberSelectionPopup(String dayOfDraw) {
     showDialog(
@@ -162,9 +212,7 @@ void enterLottery() async {
                             ElevatedButton(
                               onPressed: () {
                                 Navigator.of(context).pop();
-                                // Perform database update and credit deduction here
-                                // Once the update is confirmed, return to the lottery screen
-                                // and display a success message.
+                                performDatabaseUpdate();
                               },
                               child: const Text('Confirm'),
                             ),
@@ -320,34 +368,22 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
       alignment: WrapAlignment.center,
       spacing: 8.0,
       runSpacing: 8.0,
-      children: List<Widget>.generate(49, (int index) {
-        final number = index + 1;
-        final isSelected = isNumberSelected(number);
-        final isDisabled = isNumberDisabled(number);
-
-        return GestureDetector(
-          onTap: () {
-            toggleNumberSelection(number);
-          },
-          child: Container(
-            width: 40,
-            height: 40,
-            decoration: BoxDecoration(
-              color: isDisabled ? Colors.grey[700] : (isSelected ? Colors.blue : Colors.grey),
-              borderRadius: BorderRadius.circular(8.0),
-            ),
-            child: Center(
-              child: Text(
-                number.toString(),
-                style: TextStyle(
-                  color: isDisabled ? Colors.grey[300] : (isSelected ? Colors.white : Colors.black),
-                ),
-              ),
+      children: availableNumbers.map((number) {
+        return ElevatedButton(
+          onPressed: isNumberDisabled(number) ? null : () => toggleNumberSelection(number),
+          style: ElevatedButton.styleFrom(
+            primary: isNumberSelected(number) ? Colors.blue : Colors.grey.shade300,
+            shape: CircleBorder(),
+          ),
+          child: Text(
+            number.toString(),
+            style: TextStyle(
+              color: isNumberDisabled(number) ? Colors.grey.shade400 : Colors.grey.shade800,
+              fontWeight: FontWeight.bold,
             ),
           ),
         );
-      }),
+      }).toList(),
     );
   }
 }
-
