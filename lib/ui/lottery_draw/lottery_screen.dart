@@ -211,6 +211,8 @@ class _LotteryState extends State<LotteryScreen> {
                           actions: [
                             ElevatedButton(
                               onPressed: () {
+                                // upon final confirmation update the database and take user back to base lottery screen.
+                                Navigator.of(context).pop();
                                 Navigator.of(context).pop();
                                 performDatabaseUpdate();
                               },
