@@ -230,15 +230,6 @@ void enterLottery() async {
               child: const Text('Enter Lottery'),
             ),
             const SizedBox(height: 10),
-            const Text(
-              'Random Numbers:',
-              style: TextStyle(fontSize: 18.0, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 10),
-            Text(
-              numbers.isNotEmpty ? numbers.join(' - ') : 'No numbers generated yet',
-              style: const TextStyle(fontSize: 18.0),
-            ),
           ],
         ),
       ),
