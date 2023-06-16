@@ -39,20 +39,35 @@ class _LotteryState extends State<LotteryScreen> {
     var daysToAdd = 0;
 
     switch (currentDayOfDraw) {
+      case 'Monday':
+        daysToAdd = 2 - now.weekday;
+        break;
       case 'Tuesday':
-        daysToAdd = now.weekday <= 2 ? 2 - now.weekday : 9 - now.weekday;
+        daysToAdd = 2 - now.weekday;
+        break;
+        case 'Wednesday':
+        daysToAdd = 4 - now.weekday;
         break;
       case 'Thursday':
-        daysToAdd = now.weekday <= 4 ? 4 - now.weekday : 11 - now.weekday;
+        daysToAdd = 4 - now.weekday;
+        break;
+      case 'Friday':
+        daysToAdd = 7 - now.weekday;
+        break;
+      case 'Saturday':
+        daysToAdd = 7 - now.weekday;
         break;
       case 'Sunday':
-        daysToAdd = now.weekday <= 7 ? 7 - now.weekday : 14 - now.weekday;
+        daysToAdd = 7 - now.weekday;
+        break;
+      default:
+        daysToAdd = 0;
         break;
     }
 
     final nextDrawDate = now.add(Duration(days: daysToAdd));
     nextDrawDateTime = DateTime(
-        nextDrawDate.year, nextDrawDate.month, nextDrawDate.day, 20, 30, 0);
+        nextDrawDate.year, nextDrawDate.month, nextDrawDate.day, 21, 0, 0);
   }
 
   void startTimer() {
@@ -101,13 +116,13 @@ class _LotteryState extends State<LotteryScreen> {
 
   Future<void> performDatabaseUpdate(String dayOfDraw) async {
     try {
-
       if (selectedNumbers.length != getRequiredNumberOfNumbers(dayOfDraw)) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please select the correct number of numbers.')),
-      );
-      return;
-    }
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text('Please select the correct number of numbers.')),
+        );
+        return;
+      }
 
       final selectedNumbersSorted = selectedNumbers.toList()..sort();
       final lotteryEventId = await getLotteryEventId();
@@ -343,7 +358,8 @@ class NumberSelectionWidget extends StatefulWidget {
   final Function(List<int>) onSelectionChanged;
 
   const NumberSelectionWidget(
-      this.dayOfDraw, this.selectedNumbers, this.onSelectionChanged, {super.key});
+      this.dayOfDraw, this.selectedNumbers, this.onSelectionChanged,
+      {super.key});
 
   @override
   _NumberSelectionWidgetState createState() => _NumberSelectionWidgetState();
@@ -434,7 +450,8 @@ class _NumberSelectionWidgetState extends State<NumberSelectionWidget> {
               ? null
               : () => toggleNumberSelection(number),
           style: ElevatedButton.styleFrom(
-            backgroundColor: isNumberSelected(number) ? Colors.blue : Colors.grey.shade300,
+            backgroundColor:
+                isNumberSelected(number) ? Colors.blue : Colors.grey.shade300,
             shape: const CircleBorder(),
           ),
           child: Text(
