@@ -70,17 +70,27 @@ exports.populateLotteryEvents = functions.pubsub
       ];
       const currentDay = daysOfWeek[currentDateTime.getDay()];
 
-      // Generate the random numbers based on the day of the draw
-      let winningNumbers;
+      // Determine the next draw day based on the current day
+      let nextDrawDay;
       if (currentDay === "Tuesday") {
-        winningNumbers = generateRandomNumbers(4, 1, 29);
-      } else if (currentDay === "Wednesday") {
-        winningNumbers = generateRandomNumbers(3, 1, 39);
+        nextDrawDay = "Thursday";
       } else if (currentDay === "Thursday") {
-        winningNumbers = generateRandomNumbers(2, 1, 49);
+        nextDrawDay = "Sunday";
+      } else if (currentDay === "Sunday") {
+        nextDrawDay = "Tuesday";
       } else {
         console.log("No lottery event for the current day:", currentDay);
         return null;
+      }
+
+      // Generate the random numbers based on the next draw day
+      let winningNumbers;
+      if (nextDrawDay === "Tuesday") {
+        winningNumbers = generateRandomNumbers(4, 1, 29);
+      } else if (nextDrawDay === "Thursday") {
+        winningNumbers = generateRandomNumbers(3, 1, 39);
+      } else if (nextDrawDay === "Sunday") {
+        winningNumbers = generateRandomNumbers(2, 1, 49);
       }
 
       // Create a new document in the 'lotteryEvents' collection
@@ -89,7 +99,7 @@ exports.populateLotteryEvents = functions.pubsub
         name: name,
         winningNumbers: winningNumbers,
         amountSoFar: 0, // Initialize the amount of money to 0
-        dayOfDraw: currentDay, // Add the day of the draw
+        dayOfDraw: nextDrawDay, // Add the next draw day
         minRange: 1, // Minimum value of the range
         // Maximum value of the range
         // eslint-disable-next-line max-len
