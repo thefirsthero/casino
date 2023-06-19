@@ -55,20 +55,9 @@ exports.populateLotteryEvents = functions.pubsub
     .timeZone("Africa/Johannesburg")
     .onRun(async (context) => {
       // Generate the data for the new entry
-      const currentDateTime = admin.firestore.Timestamp.now().toDate();
-      const name = generateRandomName();
-
-      // Determine the day of the draw
-      const daysOfWeek = [
-        "Sunday",
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-      ];
-      const currentDay = daysOfWeek[currentDateTime.getDay()];
+      const currentDate = new Date();
+      // eslint-disable-next-line max-len
+      const currentDay = currentDate.toLocaleDateString("en-US", {weekday: "long"});
 
       // Determine the next draw day based on the current day
       let nextDrawDay;
@@ -83,6 +72,27 @@ exports.populateLotteryEvents = functions.pubsub
         return null;
       }
 
+      // Determine the future date of the next draw day
+      const nextDrawDate = getNextDrawDate(currentDate, nextDrawDay);
+
+      /**
+     * Calculates the future date of the next draw day based on
+     * the current date.
+     * @param {Date} currentDate The current date.
+     * @param {string} nextDrawDay The next draw day.
+     * @return {Date} The future date of the next draw day.
+     */
+      function getNextDrawDate(currentDate, nextDrawDay) {
+        const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday",
+          "Thursday", "Friday", "Saturday"];
+        const currentDayIndex = daysOfWeek.indexOf(currentDate.getDay());
+        const nextDrawDayIndex = daysOfWeek.indexOf(nextDrawDay);
+        const daysToAdd = (nextDrawDayIndex + 7 - currentDayIndex) % 7;
+        const nextDrawDate = new Date(currentDate);
+        nextDrawDate.setDate(currentDate.getDate() + daysToAdd);
+        return nextDrawDate;
+      }
+
       // Generate the random numbers based on the next draw day
       let winningNumbers;
       if (nextDrawDay === "Tuesday") {
@@ -93,19 +103,19 @@ exports.populateLotteryEvents = functions.pubsub
         winningNumbers = generateRandomNumbers(2, 1, 49);
       }
 
+      // Generate the name for the new entry
+      const name = generateRandomName();
+
       // Create a new document in the 'lotteryEvents' collection
       const lotteryEvent = {
-        date: currentDateTime,
+        date: admin.firestore.Timestamp.fromDate(nextDrawDate),
         name: name,
         winningNumbers: winningNumbers,
         amountSoFar: 0, // Initialize the amount of money to 0
         dayOfDraw: nextDrawDay, // Add the next draw day
         minRange: 1, // Minimum value of the range
-        // Maximum value of the range
         // eslint-disable-next-line max-len
-        maxRange:
-          // eslint-disable-next-line max-len
-          winningNumbers.length === 4 ? 29 : winningNumbers.length === 3 ? 39 : 49, // eslint-disable-next-line max-len
+        maxRange: winningNumbers.length === 4 ? 29 : winningNumbers.length === 3 ? 39 : 49,
         isOngoing: true, // Set the isOngoing field to true
       };
 
