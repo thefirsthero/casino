@@ -8,7 +8,6 @@ import 'package:flutter_login_screen/ui/home/drawer/drawer_widget.dart';
 import 'package:flutter_login_screen/services/random_number_generator.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 class LotteryScreen extends StatefulWidget {
   final User user;
 
@@ -35,33 +34,57 @@ class _LotteryState extends State<LotteryScreen> {
     startTimer();
   }
 
+  Future<void> addCreditsToLotteryEvent() async {
+    try {
+      final querySnapshot = await FirebaseFirestore.instance
+          .collection('lotteryEvents')
+          .where('isOngoing', isEqualTo: true)
+          .orderBy('date', descending: true)
+          .limit(1)
+          .get();
+
+      if (querySnapshot.docs.isNotEmpty) {
+        final latestEvent = querySnapshot.docs.first;
+        final eventId = latestEvent.id;
+
+        await FirebaseFirestore.instance
+            .collection('lotteryEvents')
+            .doc(eventId)
+            .update({
+          'amountSoFar': FieldValue.increment(5),
+        });
+      }
+    } catch (e) {
+      print('Error adding credits to lottery event: $e');
+    }
+  }
+
   Future<void> deductCredits(int amount) async {
-  try {
-    final userRef = FirebaseFirestore.instance
-        .collection('users')
-        .doc(user.userID);
+    try {
+      final userRef =
+          FirebaseFirestore.instance.collection('users').doc(user.userID);
 
-    final userData = await userRef.get();
-    final currentCredits = userData.get('credits') as int;
+      final userData = await userRef.get();
+      final currentCredits = userData.get('credits') as int;
 
-    if (currentCredits >= amount) {
-      await userRef.update({'credits': currentCredits - amount});
+      if (currentCredits >= amount) {
+        await userRef.update({'credits': currentCredits - amount});
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Credits deducted successfully!')),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Insufficient credits!')),
+        );
+      }
+    } catch (error) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Credits deducted successfully!')),
-      );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Insufficient credits!')),
+        const SnackBar(
+          content: Text('Failed to deduct credits. Please try again.'),
+        ),
       );
     }
-  } catch (error) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Failed to deduct credits. Please try again.'),
-      ),
-    );
   }
-}
 
   void initializeNextDrawDateTime() {
     final now = DateTime.now();
@@ -75,7 +98,7 @@ class _LotteryState extends State<LotteryScreen> {
       case 'Tuesday':
         daysToAdd = 2 - now.weekday;
         break;
-        case 'Wednesday':
+      case 'Wednesday':
         daysToAdd = 4 - now.weekday;
         break;
       case 'Thursday':
@@ -280,12 +303,14 @@ class _LotteryState extends State<LotteryScreen> {
                                 'Are you sure you want to enter the lottery? This action cannot be undone.'),
                             actions: [
                               ElevatedButton(
-                                onPressed: () {
+                                onPressed: () async {
                                   // upon final confirmation update the database and take user back to base lottery screen.
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
-                                  performDatabaseUpdate(dayOfDraw);
-                                  deductCredits(5); // Deduct 5 credits from the user's account
+                                  await performDatabaseUpdate(dayOfDraw);
+                                  await deductCredits(
+                                      5); // Deduct 5 credits from the user's account
+                                  await addCreditsToLotteryEvent(); // Add 5 credits to the amountSoFar field of the most recent lotteryEvent
                                 },
                                 child: const Text('Confirm'),
                               ),
