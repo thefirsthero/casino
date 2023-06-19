@@ -49,8 +49,6 @@ function generateRandomNumbers(count, min, max) {
  *  complete.
  */
 exports.populateLotteryEvents = functions.pubsub
-    // Run every Tuesday, Thursday, & Sunday at 20:30 (South African
-    //  Standard Time)
     .schedule("30 20 * * 2,4,7")
     .timeZone("Africa/Johannesburg")
     .onRun(async (context) => {
@@ -76,16 +74,17 @@ exports.populateLotteryEvents = functions.pubsub
       const nextDrawDate = getNextDrawDate(currentDate, nextDrawDay);
 
       /**
-     * Calculates the future date of the next draw day based on
-     * the current date.
-     * @param {Date} currentDate The current date.
-     * @param {string} nextDrawDay The next draw day.
-     * @return {Date} The future date of the next draw day.
-     */
+       * Calculates the future date of the next draw day based on
+       * the current date.
+       * @param {Date} currentDate The current date.
+       * @param {string} nextDrawDay The next draw day.
+       * @return {Date} The future date of the next draw day.
+       */
       function getNextDrawDate(currentDate, nextDrawDay) {
         const daysOfWeek = ["Sunday", "Monday", "Tuesday", "Wednesday",
           "Thursday", "Friday", "Saturday"];
-        const currentDayIndex = daysOfWeek.indexOf(currentDate.getDay());
+        // eslint-disable-next-line max-len
+        const currentDayIndex = daysOfWeek.indexOf(currentDate.toLocaleDateString("en-US", {weekday: "long"}));
         const nextDrawDayIndex = daysOfWeek.indexOf(nextDrawDay);
         const daysToAdd = (nextDrawDayIndex + 7 - currentDayIndex) % 7;
         const nextDrawDate = new Date(currentDate);
@@ -124,8 +123,29 @@ exports.populateLotteryEvents = functions.pubsub
           .orderBy("date", "desc")
           .limit(1)
           .get();
+
       if (!querySnapshot.empty) {
         const previousEvent = querySnapshot.docs[0];
+
+        // Check if there's a matching document in the gamesPlayed collection
+        const gamesPlayedRef = db.collection("gamesPlayed");
+        const matchingDocuments = await gamesPlayedRef
+            .where("lotteryEventID", "==", previousEvent.id)
+            .where("numbersPlayed",
+                "array-contains-any", previousEvent.data().winningNumbers)
+            .get();
+
+        // Update the correctNumbers field in the matching documents
+        matchingDocuments.forEach(async (doc) => {
+          const numbersPlayed = doc.data().numbersPlayed;
+          const matchingNumbers = numbersPlayed.filter((num) =>
+            previousEvent.data().winningNumbers.includes(num));
+          const correctNumbers = doc.data().correctNumbers || [];
+          const updatedCorrectNumbers = [
+            ...new Set(correctNumbers.concat(matchingNumbers))];
+          await doc.ref.update({correctNumbers: updatedCorrectNumbers});
+        });
+
         await previousEvent.ref.update({isOngoing: false});
       }
 
