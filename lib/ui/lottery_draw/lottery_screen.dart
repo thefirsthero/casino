@@ -6,6 +6,8 @@ import 'package:flutter_login_screen/model/user.dart';
 import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_login_screen/ui/home/drawer/drawer_widget.dart';
 import 'package:flutter_login_screen/services/random_number_generator.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+
 
 class LotteryScreen extends StatefulWidget {
   final User user;
@@ -32,6 +34,34 @@ class _LotteryState extends State<LotteryScreen> {
     initializeNextDrawDateTime();
     startTimer();
   }
+
+  Future<void> deductCredits(int amount) async {
+  try {
+    final userRef = FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.userID);
+
+    final userData = await userRef.get();
+    final currentCredits = userData.get('credits') as int;
+
+    if (currentCredits >= amount) {
+      await userRef.update({'credits': currentCredits - amount});
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Credits deducted successfully!')),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Insufficient credits!')),
+      );
+    }
+  } catch (error) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text('Failed to deduct credits. Please try again.'),
+      ),
+    );
+  }
+}
 
   void initializeNextDrawDateTime() {
     final now = DateTime.now();
@@ -255,6 +285,7 @@ class _LotteryState extends State<LotteryScreen> {
                                   Navigator.of(context).pop();
                                   Navigator.of(context).pop();
                                   performDatabaseUpdate(dayOfDraw);
+                                  deductCredits(5); // Deduct 5 credits from the user's account
                                 },
                                 child: const Text('Confirm'),
                               ),
