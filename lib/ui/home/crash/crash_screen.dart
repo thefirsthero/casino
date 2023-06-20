@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_login_screen/services/helper.dart';
 
 class CrashGameScreen extends StatefulWidget {
   @override
@@ -128,7 +129,19 @@ class _CrashGameScreenState extends State<CrashGameScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crash Game'),
+        title: Text('Crash Game',
+        style: TextStyle(
+              color: isDarkMode(context)
+                  ? Colors.grey.shade50
+                  : Colors.grey.shade900),
+        ),
+        iconTheme: IconThemeData(
+            color: isDarkMode(context)
+                ? Colors.grey.shade50
+                : Colors.grey.shade900),
+        backgroundColor:
+            isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
+        centerTitle: true,
       ),
       body: SingleChildScrollView(
         child: Container(
