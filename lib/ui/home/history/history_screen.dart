@@ -4,11 +4,12 @@ import 'package:flutter_login_screen/model/game.dart';
 import 'package:flutter_login_screen/model/user.dart';
 import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_login_screen/ui/home/drawer/drawer_widget.dart';
+import 'package:intl/date_symbol_data_local.dart';
+import 'package:month_picker_dialog/month_picker_dialog.dart';
 
 enum FilterType {
   day,
   month,
-  year,
   all,
 }
 
@@ -21,8 +22,7 @@ class HistoryScreen extends StatefulWidget {
   _HistoryScreenState createState() => _HistoryScreenState();
 }
 
-class _HistoryScreenState extends State<HistoryScreen>
-    with SingleTickerProviderStateMixin {
+class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProviderStateMixin {
   late TabController _tabController;
   late FilterType _filterType;
   DateTime? _selectedDate;
@@ -48,36 +48,14 @@ class _HistoryScreenState extends State<HistoryScreen>
         title: Text(
           'History',
           style: TextStyle(
-              color: isDarkMode(context)
-                  ? Colors.grey.shade50
-                  : Colors.grey.shade900),
+            color: isDarkMode(context) ? Colors.grey.shade50 : Colors.grey.shade900,
+          ),
         ),
         iconTheme: IconThemeData(
-            color: isDarkMode(context)
-                ? Colors.grey.shade50
-                : Colors.grey.shade900),
-        backgroundColor:
-            isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
-        centerTitle: true,
-        bottom: TabBar(
-          controller: _tabController,
-          labelColor:
-              isDarkMode(context) ? Colors.grey.shade50 : Colors.grey.shade900,
-          unselectedLabelColor:
-              isDarkMode(context) ? Colors.grey.shade50 : Colors.grey.shade900,
-          tabs: [
-            Tab(text: 'Day'),
-            Tab(text: 'Month'),
-            Tab(text: 'Year'),
-            Tab(text: 'All'),
-          ],
-          onTap: (index) {
-            setState(() {
-              _filterType = FilterType.values[index];
-              _selectedDate = null;
-            });
-          },
+          color: isDarkMode(context) ? Colors.grey.shade50 : Colors.grey.shade900,
         ),
+        backgroundColor: isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
+        centerTitle: true,
       ),
       drawer: DrawerWidget(user: widget.user),
       body: StreamBuilder<QuerySnapshot<Map<String, dynamic>>>(
@@ -87,34 +65,18 @@ class _HistoryScreenState extends State<HistoryScreen>
             .snapshots(),
         builder: (context, snapshot) {
           if (snapshot.hasData) {
-            final games = snapshot.data!.docs
-                .map((doc) => Game.fromDocument(doc))
-                .toList();
-            final filteredGamesFuture = _getFilteredGamesWithWinningNumbers(
-                games, _filterType, _selectedDate);
+            final games = snapshot.data!.docs.map((doc) => Game.fromDocument(doc)).toList();
+            final filteredGamesFuture =
+                _getFilteredGamesWithWinningNumbers(games, _filterType, _selectedDate);
             return Column(
               children: [
-                if (_filterType != FilterType.all)
-                  Container(
-                    padding: EdgeInsets.all(16),
-                    child: ElevatedButton(
-                      onPressed: () async {
-                        final selectedDate = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime.now(),
-                        );
-                        if (selectedDate != null) {
-                          setState(() {
-                            _selectedDate = selectedDate;
-                          });
-                        }
-                      },
-                      child: Text(
-                          'Select ${_filterType.toString().split('.').last}'),
-                    ),
+                Container(
+                  padding: EdgeInsets.all(16),
+                  child: ElevatedButton(
+                    onPressed: _selectFilter,
+                    child: Text('Filter'),
                   ),
+                ),
                 Expanded(
                   child: FutureBuilder<List<Game>>(
                     future: filteredGamesFuture,
@@ -131,8 +93,8 @@ class _HistoryScreenState extends State<HistoryScreen>
                             final game = gamesWithWinningNumbers[index];
                             return Card(
                               elevation: 2,
-                              margin: EdgeInsets.symmetric(
-                                  vertical: 8, horizontal: 16),
+                              margin:
+                                  EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                               child: Padding(
                                 padding: EdgeInsets.all(16),
                                 child: Column(
@@ -140,14 +102,11 @@ class _HistoryScreenState extends State<HistoryScreen>
                                   children: [
                                     Text('Date Played: ${game.datePlayed}'),
                                     SizedBox(height: 8),
-                                    Text(
-                                        'Numbers Played: ${game.numbersPlayed}'),
+                                    Text('Numbers Played: ${game.numbersPlayed}'),
                                     SizedBox(height: 4),
-                                    Text(
-                                        'Correct Numbers: ${game.correctNumbers}'),
+                                    Text('Correct Numbers: ${game.correctNumbers}'),
                                     SizedBox(height: 4),
-                                    Text(
-                                        'Winning Numbers: ${game.winningNumbers}'),
+                                    Text('Winning Numbers: ${game.winningNumbers}'),
                                   ],
                                 ),
                               ),
@@ -196,9 +155,6 @@ class _HistoryScreenState extends State<HistoryScreen>
         case FilterType.month:
           includeGame = _isSameMonth(game.datePlayed, selectedDate);
           break;
-        case FilterType.year:
-          includeGame = _isSameYear(game.datePlayed, selectedDate);
-          break;
         case FilterType.all:
           includeGame = true;
           break;
@@ -227,9 +183,86 @@ class _HistoryScreenState extends State<HistoryScreen>
         gameDate.month == selectedDate.month;
   }
 
-  bool _isSameYear(String date, DateTime? selectedDate) {
-    if (selectedDate == null) return false;
-    final gameDate = DateTime.parse(date);
-    return gameDate.year == selectedDate.year;
+  void _selectFilter() async {
+    final FilterType? selectedFilter = await showDialog<FilterType>(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text('Filter'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ListTile(
+                title: Text('Day'),
+                onTap: () => Navigator.pop(context, FilterType.day),
+              ),
+              ListTile(
+                title: Text('Month'),
+                onTap: () => Navigator.pop(context, FilterType.month),
+              ),
+              ListTile(
+                title: Text('All'),
+                onTap: () => Navigator.pop(context, FilterType.all),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+
+    if (selectedFilter != null) {
+      setState(() {
+        _filterType = selectedFilter;
+        _selectedDate = null;
+      });
+
+      if (selectedFilter == FilterType.day) {
+        _selectDate();
+      } else if (selectedFilter == FilterType.month) {
+        _selectMonth();
+      }
+    }
+  }
+
+  void _selectDate() async {
+    final selectedDate = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+    );
+    if (selectedDate != null) {
+      setState(() {
+        _selectedDate = selectedDate;
+      });
+    }
+  }
+
+  void _selectMonth() async {
+    await initializeDateFormatting();
+    final DateTime? selectedMonth = await showMonthPicker(
+      context: context,
+      firstDate: DateTime(1900),
+      lastDate: DateTime.now(),
+      initialDate: DateTime.now(),
+      locale: Locale("en"),
+    );
+    if (selectedMonth != null) {
+      setState(() {
+        _selectedDate = selectedMonth;
+      });
+    }
+  }
+
+  String _getFilterLabel(FilterType filterType) {
+    switch (filterType) {
+      case FilterType.day:
+        return 'Day';
+      case FilterType.month:
+        return 'Month';
+      case FilterType.all:
+        return 'All';
+    }
   }
 }
