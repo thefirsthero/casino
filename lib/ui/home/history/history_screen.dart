@@ -39,15 +39,31 @@ class HistoryScreen extends StatelessWidget {
                     itemCount: gamesWithWinningNumbers.length,
                     itemBuilder: (context, index) {
                       final game = gamesWithWinningNumbers[index];
-                      return ListTile(
-                        title: Text('Date Played: ${game.datePlayed}'),
-                        subtitle: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text('Numbers Played: ${game.numbersPlayed}'),
-                            Text('Correct Numbers: ${game.correctNumbers}'),
-                            Text('Winning Numbers: ${game.winningNumbers}'),
-                          ],
+                      return Card(
+                        elevation: 2,
+                        margin: EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        child: Padding(
+                          padding: EdgeInsets.all(16),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Date Played: ${game.datePlayed}',
+                                style: TextStyle(fontWeight: FontWeight.bold),
+                              ),
+                              SizedBox(height: 8),
+                              Text('Numbers Played: ${game.numbersPlayed}'),
+                              SizedBox(height: 4),
+                              Text('Correct Numbers: ${game.correctNumbers}'),
+                              SizedBox(height: 4),
+                              Text('Winning Numbers:', style: TextStyle(fontWeight: FontWeight.bold)),
+                              SizedBox(height: 4),
+                              if (game.winningNumbers.isNotEmpty)
+                                Text(game.winningNumbers.join(', ')),
+                              if (game.winningNumbers.isEmpty)
+                                Text('No winning numbers available.'),
+                            ],
+                          ),
                         ),
                       );
                     },
