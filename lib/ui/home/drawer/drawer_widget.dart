@@ -211,7 +211,7 @@ class DrawerWidget extends StatelessWidget {
                     ),
                   ),
                   onTap: () {
-                    push(context, HistoryScreen());
+                    push(context, HistoryScreen(user: user));
                   },
                 ),
                 // logout button
