@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart' show defaultTargetPlatform, kIsWeb;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_login_screen/constants.dart';
 import 'package:flutter_login_screen/firebase_options.dart';
@@ -12,7 +11,6 @@ import 'package:flutter_login_screen/ui/auth/launcherScreen/launcher_screen.dart
 import 'package:flutter_login_screen/ui/loading_cubit.dart';
 
 void main() async {
-  await dotenv.load();
   
   if (kIsWeb || defaultTargetPlatform == TargetPlatform.macOS) {
     await FacebookAuth.i.webAndDesktopInitialize(
