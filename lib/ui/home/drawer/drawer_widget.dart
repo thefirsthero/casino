@@ -44,7 +44,7 @@ class DrawerWidget extends StatelessWidget {
                         Text(user.email),
                         Text(
                           'Credits: $credits',
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: Colors.red,
@@ -57,7 +57,7 @@ class DrawerWidget extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(user.email),
-                        Text(
+                        const Text(
                           'Credits: Loading...',
                           style: TextStyle(
                             fontSize: 12,

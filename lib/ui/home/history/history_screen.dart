@@ -71,10 +71,10 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
             return Column(
               children: [
                 Container(
-                  padding: EdgeInsets.all(16),
+                  padding: const EdgeInsets.all(16),
                   child: ElevatedButton(
                     onPressed: _selectFilter,
-                    child: Text('Filter'),
+                    child: const Text('Filter'),
                   ),
                 ),
                 Expanded(
@@ -82,7 +82,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
                     future: filteredGamesFuture,
                     builder: (context, snapshot) {
                       if (snapshot.connectionState == ConnectionState.waiting) {
-                        return Center(child: CircularProgressIndicator());
+                        return const Center(child: CircularProgressIndicator());
                       } else if (snapshot.hasError) {
                         return Text('Error: ${snapshot.error}');
                       } else {
@@ -94,18 +94,18 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
                             return Card(
                               elevation: 2,
                               margin:
-                                  EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                                  const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
                               child: Padding(
-                                padding: EdgeInsets.all(16),
+                                padding: const EdgeInsets.all(16),
                                 child: Column(
                                   crossAxisAlignment: CrossAxisAlignment.start,
                                   children: [
                                     Text('Date Played: ${game.datePlayed}'),
-                                    SizedBox(height: 8),
+                                    const SizedBox(height: 8),
                                     Text('Numbers Played: ${game.numbersPlayed}'),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text('Correct Numbers: ${game.correctNumbers}'),
-                                    SizedBox(height: 4),
+                                    const SizedBox(height: 4),
                                     Text('Winning Numbers: ${game.winningNumbers}'),
                                   ],
                                 ),
@@ -122,7 +122,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
           } else if (snapshot.hasError) {
             return Text('Error: ${snapshot.error}');
           } else {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
         },
       ),
@@ -188,21 +188,21 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          title: Text('Filter'),
+          title: const Text('Filter'),
           content: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               ListTile(
-                title: Text('Day'),
+                title: const Text('Day'),
                 onTap: () => Navigator.pop(context, FilterType.day),
               ),
               ListTile(
-                title: Text('Month'),
+                title: const Text('Month'),
                 onTap: () => Navigator.pop(context, FilterType.month),
               ),
               ListTile(
-                title: Text('All'),
+                title: const Text('All'),
                 onTap: () => Navigator.pop(context, FilterType.all),
               ),
             ],
@@ -246,7 +246,7 @@ class _HistoryScreenState extends State<HistoryScreen> with SingleTickerProvider
       firstDate: DateTime(1900),
       lastDate: DateTime.now(),
       initialDate: DateTime.now(),
-      locale: Locale("en"),
+      locale: const Locale("en"),
     );
     if (selectedMonth != null) {
       setState(() {
