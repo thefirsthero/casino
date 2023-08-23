@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_login_screen/model/user.dart';
+import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_login_screen/ui/home/drawer/drawer_widget.dart';
 
 class AboutPage extends StatelessWidget {
@@ -9,11 +10,24 @@ class AboutPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final textColor = Theme.of(context).textTheme.bodyText1?.color;
+    final textColor = Theme.of(context).textTheme.bodyLarge?.color;
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('About'),
+        title: Text(
+          'About',
+          style: TextStyle(
+              color: isDarkMode(context)
+                  ? Colors.grey.shade50
+                  : Colors.grey.shade900),
+        ),
+        iconTheme: IconThemeData(
+            color: isDarkMode(context)
+                ? Colors.grey.shade50
+                : Colors.grey.shade900),
+        backgroundColor:
+            isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
+        centerTitle: true,
       ),
       drawer: DrawerWidget(user: user), // Include the DrawerWidget
 
@@ -49,7 +63,7 @@ class AboutPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -63,7 +77,7 @@ class AboutPage extends StatelessWidget {
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Card(
                 color: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
@@ -90,32 +104,32 @@ class AboutPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                          'There are 3 draws that happen every week. On Tuesday, Thursday and Sunday, all at 21:00 SAST.',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: textColor,
-                          ),
+                        'There are 3 draws that happen every week. On Tuesday, Thursday and Sunday, all at 21:00 SAST.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: textColor,
                         ),
+                      ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
-                          'You are able to enter a draw at any point between 1 hour after the last draw, that is 22:00 SAST, and 1 hour before the draw closes, that is 20:00 SAST.',
-                          style: TextStyle(
-                            fontSize: 16,
-                            color: textColor,
-                          ),
+                        'You are able to enter a draw at any point between 1 hour after the last draw, that is 22:00 SAST, and 1 hour before the draw closes, that is 20:00 SAST.',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: textColor,
                         ),
+                      ),
                     ),
                   ],
                 ),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Card(
                 color: Theme.of(context).cardColor,
                 shape: RoundedRectangleBorder(
@@ -132,7 +146,7 @@ class AboutPage extends StatelessWidget {
                     ),
                   ),
                   children: [
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -143,7 +157,7 @@ class AboutPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(
@@ -154,7 +168,7 @@ class AboutPage extends StatelessWidget {
                         ),
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Padding(
                       padding: const EdgeInsets.all(8.0),
                       child: Text(

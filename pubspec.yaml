@@ -26,11 +26,14 @@ dependencies:
   flutter_bloc: ^8.1.1
   url_launcher: ^6.1.6
   file_picker: ^5.2.2
+  intl: ^0.18.1
+  month_picker_dialog: 2.0.2
 
   flutter:
     sdk: flutter
 
   cupertino_icons: ^1.0.5
+  flutter_dotenv: ^5.1.0
 
 dev_dependencies:
   flutter_launcher_icons: ^0.10.0
@@ -46,3 +49,4 @@ flutter:
   uses-material-design: true
   assets:
     - assets/images/
+    - .env
