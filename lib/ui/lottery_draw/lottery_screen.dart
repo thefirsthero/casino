@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_login_screen/model/user.dart';
 import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_login_screen/ui/home/drawer/drawer_widget.dart';
 import 'package:flutter_login_screen/services/random_number_generator.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
 
 class LotteryScreen extends StatefulWidget {
   final User user;
@@ -55,7 +55,9 @@ class _LotteryState extends State<LotteryScreen> {
         });
       }
     } catch (e) {
-      print('Error adding credits to lottery event: $e');
+      if (kDebugMode) {
+        print('Error adding credits to lottery event: $e');
+      }
     }
   }
 

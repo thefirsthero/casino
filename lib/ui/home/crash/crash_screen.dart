@@ -47,7 +47,7 @@ class _CrashGameScreenState extends State<CrashGameScreen>
       duration: Duration(seconds: _crashTime),
     );
 
-    _animation = Tween<Offset>(begin: Offset(0.0, 0.0), end: Offset(1.0, 1.0))
+    _animation = Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(1.0, 1.0))
         .animate(
       CurvedAnimation(
         parent: _animationController!,
@@ -71,15 +71,15 @@ class _CrashGameScreenState extends State<CrashGameScreen>
     showDialog(
       context: context,
       builder: (_) => AlertDialog(
-        title: Text('Crash!'),
-        content: Text('The rocket crashed!'),
+        title: const Text('Crash!'),
+        content: const Text('The rocket crashed!'),
         actions: [
           TextButton(
             onPressed: () {
               Navigator.pop(context);
               _resetGame();
             },
-            child: Text('Play Again'),
+            child: const Text('Play Again'),
           ),
         ],
       ),
@@ -116,7 +116,7 @@ class _CrashGameScreenState extends State<CrashGameScreen>
   }
 
   void _startMultiplierTimer() {
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       if (_isGameRunning) {
         setState(() {
           _multiplier += 0.1;
@@ -154,7 +154,7 @@ class _CrashGameScreenState extends State<CrashGameScreen>
                 child: Container(
                   width: 100,
                   height: 200,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('assets/images/rocket.png'),
                       fit: BoxFit.cover,
@@ -171,11 +171,11 @@ class _CrashGameScreenState extends State<CrashGameScreen>
                   children: [
                     ElevatedButton(
                       onPressed: _isGameRunning ? null : _startCrashGame,
-                      child: Text('Start'),
+                      child: const Text('Start'),
                     ),
                     ElevatedButton(
                       onPressed: _isGameRunning ? _stopCrashGame : null,
-                      child: Text('Stop'),
+                      child: const Text('Stop'),
                     ),
                   ],
                 ),
@@ -185,7 +185,7 @@ class _CrashGameScreenState extends State<CrashGameScreen>
                 right: 20,
                 child: Text(
                   'Multiplier: x${_multiplier.toStringAsFixed(1)}',
-                  style: TextStyle(fontSize: 18),
+                  style: const TextStyle(fontSize: 18),
                 ),
               ),
             ],
