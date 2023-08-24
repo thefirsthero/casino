@@ -1,34 +1,27 @@
-name: Build and Release app to Firebase Hosting
-
+name: CI
 on:
   push:
     branches:
       - main
-
+  pull_request:
+    branches:
+      - main
 jobs:
-  build:
+  build_web:
+    name: Build Flutter (Web)
     runs-on: ubuntu-latest
-
     steps:
-      - name: Check out code
-        uses: actions/checkout@v2
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: ''
-
-      - name: Build Web App
-        run: flutter build web -t lib/main.dart
-
-      - name: Set up Google Cloud credentials
-        uses: google-github-actions/setup-gcloud@v0.2.0
-        with:
-          service_account_key: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOTTERY_APP_16986 }}
-          project_id: lottery-app-16986  # Replace with your project ID
-
-      - name: Deploy to Firebase Hosting
-        run: |
-          gcloud auth activate-service-account --key-file=<(echo "$FIREBASE_SERVICE_ACCOUNT_LOTTERY_APP_16986")
-          firebase use --lottery-app-16986
-          firebase deploy --only hosting
+    - uses: actions/checkout@v1
+    - uses: subosito/flutter-action@v1
+      with:
+          channel: 'dev'
+    - run: flutter pub get
+    - run: flutter config --enable-web
+    - run: flutter build web
+    - name: Deploy to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only hosting --public build/web
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        PROJECT_ID: default
