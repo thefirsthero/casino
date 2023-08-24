@@ -29,8 +29,6 @@ jobs:
 
       - name: Deploy to Firebase Hosting
         run: |
-          echo "$FIREBASE_SERVICE_ACCOUNT_LOTTERY_APP_16986" > keyfile.json
-          gcloud auth activate-service-account --key-file=keyfile.json
+          gcloud auth activate-service-account --key-file=<(echo "$FIREBASE_SERVICE_ACCOUNT_LOTTERY_APP_16986")
           firebase use --lottery-app-16986
           firebase deploy --only hosting
-
