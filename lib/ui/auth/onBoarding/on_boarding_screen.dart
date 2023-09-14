@@ -34,156 +34,100 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
   }
 
   void nextPage() {
-    if (currentPage < widget.titles.length - 1) {
-      pageController.nextPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.ease,
-      );
-      setState(() {
-        currentPage++;
-      });
-    }
+  if (currentPage < widget.titles.length - 1) {
+    pageController.nextPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+    setState(() {
+      currentPage++;
+    });
   }
+}
 
-  void previousPage() {
-    if (currentPage > 0) {
-      pageController.previousPage(
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.ease,
-      );
-      setState(() {
-        currentPage--;
-      });
-    }
+void previousPage() {
+  if (currentPage > 0) {
+    pageController.previousPage(
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.ease,
+    );
+    setState(() {
+      currentPage--;
+    });
   }
+}
 
-  @override
-  Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) => OnBoardingCubit(),
-      child: Scaffold(
-        backgroundColor: const Color(colorPrimary),
-        body: BlocBuilder<OnBoardingCubit, OnBoardingInitial>(
-          builder: (context, state) {
-            return Stack(
-              children: [
-                PageView.builder(
-                  itemBuilder: (context, index) => OnBoardingPage(
-                    image: widget.images[index],
-                    title: widget.titles[index],
-                    subtitle: widget.subtitles[index],
-                  ),
-                  controller: pageController,
-                  itemCount: widget.titles.length,
-                  onPageChanged: (int index) {
-                    context.read<OnBoardingCubit>().onPageChanged(index);
-                    setState(() {
-                      currentPage = index;
-                    });
-                  },
-                ),
-                Visibility(
-                  visible: state.currentPageCount + 1 == widget.titles.length,
-                  child: Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: Align(
-                      alignment: Directionality.of(context) == TextDirection.ltr
-                          ? Alignment.bottomRight
-                          : Alignment.bottomLeft,
-                      child:
-                          BlocListener<AuthenticationBloc, AuthenticationState>(
-                        listener: (context, state) {
-                          if (state.authState == AuthState.unauthenticated) {
-                            pushAndRemoveUntil(
-                                context, const WelcomeScreen(), false);
-                          }
-                        },
-                        child: OutlinedButton(
-                          onPressed: () {
-                            context
-                                .read<AuthenticationBloc>()
-                                .add(FinishedOnBoardingEvent());
-                          },
-                          style: OutlinedButton.styleFrom(
-                              side: const BorderSide(color: Colors.white),
-                              shape: const StadiumBorder()),
-                          child: const Text(
-                            'Continue',
-                            style: TextStyle(
-                                fontSize: 14.0,
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(bottom: 50.0),
-                  child: Align(
-                    alignment: Alignment.bottomCenter,
-                    child: SmoothPageIndicator(
-                      controller: pageController,
-                      count: widget.titles.length,
-                      effect: ScrollingDotsEffect(
-                          activeDotColor: Colors.white,
-                          dotColor: Colors.grey.shade400,
-                          dotWidth: 8,
-                          dotHeight: 8,
-                          fixedCenter: true),
-                    ),
-                  ),
-                ),
-                // Next button for web navigation
-                if (kIsWeb)
-                  Align(
-                    alignment: Alignment.bottomRight,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: OutlinedButton(
-                        onPressed: nextPage,
-                        style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.white),
-                            shape: const StadiumBorder()),
-                        child: const Text(
-                          'Next',
-                          style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-                // Previous button for web navigation
-                if (kIsWeb && currentPage > 0)
-                  Align(
-                    alignment: Alignment.bottomLeft,
-                    child: Padding(
-                      padding: const EdgeInsets.all(16.0),
-                      child: OutlinedButton(
-                        onPressed: previousPage,
-                        style: OutlinedButton.styleFrom(
-                            side: const BorderSide(color: Colors.white),
-                            shape: const StadiumBorder()),
-                        child: const Text(
-                          'Previous',
-                          style: TextStyle(
-                              fontSize: 14.0,
-                              color: Colors.white,
-                              fontWeight: FontWeight.bold),
-                        ),
-                      ),
-                    ),
-                  ),
-              ],
-            );
-          },
+@override
+Widget build(BuildContext context) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.center,
+    mainAxisAlignment: MainAxisAlignment.center,
+    children: [
+      widget.image is String
+          ? Image.asset(
+              widget.image,
+              width: 150,
+              height: 150,
+              fit: BoxFit.cover,
+            )
+          : Icon(
+              widget.image as IconData,
+              color: Colors.white,
+              size: 150,
+            ),
+      const SizedBox(height: 40),
+      Text(
+        widget.title.toUpperCase(),
+        style: const TextStyle(
+            color: Colors.white, fontSize: 18.0, fontWeight: FontWeight.bold),
+        textAlign: TextAlign.center,
+      ),
+      Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Text(
+          widget.subtitle,
+          style: const TextStyle(color: Colors.white, fontSize: 14.0),
+          textAlign: TextAlign.center,
         ),
       ),
-    );
-  }
+      // Continue button for the last page
+      if (currentPage == widget.titles.length - 1)
+        Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Align(
+            alignment: Directionality.of(context) == TextDirection.ltr
+                ? Alignment.bottomRight
+                : Alignment.bottomLeft,
+            child: BlocListener<AuthenticationBloc, AuthenticationState>(
+              listener: (context, state) {
+                if (state.authState == AuthState.unauthenticated) {
+                  pushAndRemoveUntil(context, const WelcomeScreen(), false);
+                }
+              },
+              child: OutlinedButton(
+                onPressed: () {
+                  context
+                      .read<AuthenticationBloc>()
+                      .add(FinishedOnBoardingEvent());
+                },
+                style: OutlinedButton.styleFrom(
+                    side: const BorderSide(color: Colors.white),
+                    shape: const StadiumBorder()),
+                child: const Text(
+                  'Continue',
+                  style: TextStyle(
+                      fontSize: 14.0,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold),
+                ),
+              ),
+            ),
+          ),
+        ),
+    ],
+  );
+}
+
 }
 
 class OnBoardingPage extends StatefulWidget {
