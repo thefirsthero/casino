@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_login_screen/services/helper.dart';
 
 class CrashGameScreen extends StatefulWidget {
   @override
@@ -12,7 +11,6 @@ class CrashGameScreen extends StatefulWidget {
 class _CrashGameScreenState extends State<CrashGameScreen>
     with TickerProviderStateMixin {
   AnimationController? _animationController;
-  Animation<Offset>? _animation;
   double _rocketPositionX = 0.1;
   double _rocketPositionY = 0.9;
   double _crashPointX = 0.0;
@@ -45,21 +43,11 @@ class _CrashGameScreenState extends State<CrashGameScreen>
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(seconds: _crashTime),
-    );
-
-    _animation = Tween<Offset>(begin: const Offset(0.0, 0.0), end: const Offset(1.0, 1.0))
-        .animate(
-      CurvedAnimation(
-        parent: _animationController!,
-        curve: Curves.linear,
-      ),
-    );
-
-    _animationController!.addStatusListener((status) {
-      if (status == AnimationStatus.completed) {
-        _rocketCrashed();
-      }
-    });
+    )..addStatusListener((status) {
+        if (status == AnimationStatus.completed) {
+          _rocketCrashed();
+        }
+      });
   }
 
   void _rocketCrashed() {
@@ -93,6 +81,7 @@ class _CrashGameScreenState extends State<CrashGameScreen>
       final random = Random();
       _crashPointX = random.nextDouble();
       _crashPointY = random.nextDouble();
+      _animationController!.duration = Duration(seconds: _crashTime);
       _animationController!.reset();
       _animationController!.forward();
       _timer = Timer(Duration(seconds: _crashTime), _rocketCrashed);
@@ -129,18 +118,16 @@ class _CrashGameScreenState extends State<CrashGameScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Crash Game',
-        style: TextStyle(
-              color: isDarkMode(context)
-                  ? Colors.grey.shade50
-                  : Colors.grey.shade900),
+        title: Text(
+          'Crash Game',
+          style: TextStyle(
+            color: Theme.of(context).textTheme.headline6!.color,
+          ),
         ),
         iconTheme: IconThemeData(
-            color: isDarkMode(context)
-                ? Colors.grey.shade50
-                : Colors.grey.shade900),
-        backgroundColor:
-            isDarkMode(context) ? Colors.grey.shade900 : Colors.grey.shade50,
+          color: Theme.of(context).textTheme.headline6!.color,
+        ),
+        backgroundColor: Theme.of(context).scaffoldBackgroundColor,
         centerTitle: true,
       ),
       body: SingleChildScrollView(
@@ -154,7 +141,7 @@ class _CrashGameScreenState extends State<CrashGameScreen>
                 child: Container(
                   width: 100,
                   height: 200,
-                  decoration: const BoxDecoration(
+                  decoration: BoxDecoration(
                     image: DecorationImage(
                       image: AssetImage('assets/images/rocket.png'),
                       fit: BoxFit.cover,
@@ -171,11 +158,11 @@ class _CrashGameScreenState extends State<CrashGameScreen>
                   children: [
                     ElevatedButton(
                       onPressed: _isGameRunning ? null : _startCrashGame,
-                      child: const Text('Start'),
+                      child: Text('Start'),
                     ),
                     ElevatedButton(
                       onPressed: _isGameRunning ? _stopCrashGame : null,
-                      child: const Text('Stop'),
+                      child: Text('Stop'),
                     ),
                   ],
                 ),
@@ -185,7 +172,7 @@ class _CrashGameScreenState extends State<CrashGameScreen>
                 right: 20,
                 child: Text(
                   'Multiplier: x${_multiplier.toStringAsFixed(1)}',
-                  style: const TextStyle(fontSize: 18),
+                  style: TextStyle(fontSize: 18),
                 ),
               ),
             ],

@@ -6,9 +6,12 @@ import 'package:flutter_login_screen/model/user.dart';
 import 'package:flutter_login_screen/services/helper.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_login_screen/ui/auth/authentication_bloc.dart';
+import 'package:flutter_login_screen/ui/coin_flip/coin_flip.dart';
+import 'package:flutter_login_screen/ui/dice_roll/dice_roll_game.dart';
 import 'package:flutter_login_screen/ui/home/crash/crash_screen.dart';
 import 'package:flutter_login_screen/ui/home/history/history_screen.dart';
 import 'package:flutter_login_screen/ui/home/home_screen.dart';
+import 'package:flutter_login_screen/ui/home/plinko/plinko_screen.dart';
 import 'package:flutter_login_screen/ui/lottery_draw/lottery_screen.dart';
 import 'package:flutter_login_screen/ui/about/about_screen.dart';
 
@@ -144,10 +147,10 @@ class DrawerWidget extends StatelessWidget {
                     push(context, LotteryScreen(user: user));
                   },
                 ),
-                // about button
+                // coin flip game button
                 ListTile(
                   title: Text(
-                    'About',
+                    'Coin Flip Game',
                     style: TextStyle(
                       color: isDarkMode(context)
                           ? Colors.grey.shade50
@@ -155,16 +158,41 @@ class DrawerWidget extends StatelessWidget {
                     ),
                   ),
                   leading: Transform.rotate(
-                    angle: 0,
+                    angle: pi / 1,
                     child: Icon(
-                      Icons.info,
+                      Icons.ballot_sharp,
                       color: isDarkMode(context)
                           ? Colors.grey.shade50
                           : Colors.grey.shade900,
                     ),
                   ),
                   onTap: () {
-                    push(context, AboutPage(user: user));
+                    // Replace with the route to your coin flip game screen
+                    push(context, CoinFlipScreen(user: user));
+                  },
+                ),
+                // dice roll game button
+                ListTile(
+                  title: Text(
+                    'Dice Roll Game',
+                    style: TextStyle(
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  leading: Transform.rotate(
+                    angle: pi / 1,
+                    child: Icon(
+                      Icons.ballot_sharp,
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  onTap: () {
+                    // Replace with the route to your dice roll game screen
+                    push(context, DiceGameScreen());
                   },
                 ),
                 // crash game button
@@ -189,6 +217,53 @@ class DrawerWidget extends StatelessWidget {
                   onTap: () {
                     // Replace with the route to your crash game screen
                     push(context, CrashGameScreen());
+                  },
+                ),
+                // plinko game button
+                ListTile(
+                  title: Text(
+                    'Plinko Game',
+                    style: TextStyle(
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  leading: Transform.rotate(
+                    angle: pi / 1,
+                    child: Icon(
+                      Icons.ballot_sharp,
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  onTap: () {
+                    // Replace with the route to your plinko game screen
+                    push(context, PlinkoScreen());
+                  },
+                ),
+                // about button
+                ListTile(
+                  title: Text(
+                    'About',
+                    style: TextStyle(
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  leading: Transform.rotate(
+                    angle: 0,
+                    child: Icon(
+                      Icons.info,
+                      color: isDarkMode(context)
+                          ? Colors.grey.shade50
+                          : Colors.grey.shade900,
+                    ),
+                  ),
+                  onTap: () {
+                    push(context, AboutPage(user: user));
                   },
                 ),
                 // history button
