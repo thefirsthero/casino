@@ -12,24 +12,17 @@ jobs:
     name: Build Flutter (Web)
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout Code
-        uses: actions/checkout@v2
-
-      - name: Set up Flutter
-        uses: subosito/flutter-action@v3
-        with:
-          flutter-version: '2.x'  # Set the desired Flutter version
-
-      - name: Install Dependencies
-        run: flutter pub get
-
-      - name: Build Flutter Web App
-        run: flutter build web
-
-      - name: Deploy to Firebase Hosting
-        uses: FirebaseExtended/action-hosting-deploy@v0
-        with:
-          repoToken: "${{ secrets.GITHUB_TOKEN }}"
-          firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOTTERY_APP_16986 }}"
-          projectId: lottery-app-16986
-          channelId: live
+    - uses: actions/checkout@v3
+    - uses: subosito/flutter-action@v2
+      with:
+          channel: 'stable'
+    - run: flutter pub get
+    - run: flutter config --enable-web
+    - run: flutter build web
+    - name: Deploy to Firebase
+      uses: w9jds/firebase-action@master
+      with:
+        args: deploy --only hosting --public build/web
+      env:
+        FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
+        PROJECT_ID: default
