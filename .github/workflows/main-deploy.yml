@@ -6,15 +6,21 @@ on:
   pull_request:
     branches:
       - main
+
 jobs:
   build_web:
-    name: Build Flutter (Web)
+    name: Build and Deploy Flutter (Web)
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      # Add any build steps here. For example:
-      # - run: npm ci && npm run build
-      - uses: FirebaseExtended/action-hosting-deploy@v0
+
+      # Build the Flutter web app
+      - name: Build Flutter Web App
+        run: flutter build web
+
+      # Deploy to Firebase Hosting
+      - name: Deploy to Firebase Hosting
+        uses: FirebaseExtended/action-hosting-deploy@v0
         with:
           repoToken: "${{ secrets.GITHUB_TOKEN }}"
           firebaseServiceAccount: "${{ secrets.FIREBASE_SERVICE_ACCOUNT_LOTTERY_APP_16986 }}"
