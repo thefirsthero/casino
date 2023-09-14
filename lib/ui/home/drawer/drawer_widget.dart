@@ -192,7 +192,7 @@ class DrawerWidget extends StatelessWidget {
                   ),
                   onTap: () {
                     // Replace with the route to your dice roll game screen
-                    push(context, DiceGameScreen());
+                    push(context, DiceGameScreen(user: user));
                   },
                 ),
                 // crash game button

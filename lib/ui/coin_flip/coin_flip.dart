@@ -88,6 +88,7 @@ class _CoinFlipScreenState extends State<CoinFlipScreen> {
         'creditsEndedWith': creditsEndedWith,
         'isGameWon': isGameWon,
         'creditsWagered': creditsWagered,
+        'timestamp': FieldValue.serverTimestamp(),
       });
     } catch (error) {
       if (kDebugMode) {
