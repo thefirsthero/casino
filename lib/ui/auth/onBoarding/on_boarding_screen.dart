@@ -24,11 +24,36 @@ class OnBoardingScreen extends StatefulWidget {
 
 class _OnBoardingScreenState extends State<OnBoardingScreen> {
   PageController pageController = PageController();
+  int currentPage = 0;
 
   @override
   void dispose() {
     pageController.dispose();
     super.dispose();
+  }
+
+  void nextPage() {
+    if (currentPage < widget.titles.length - 1) {
+      pageController.nextPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+      setState(() {
+        currentPage++;
+      });
+    }
+  }
+
+  void previousPage() {
+    if (currentPage > 0) {
+      pageController.previousPage(
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.ease,
+      );
+      setState(() {
+        currentPage--;
+      });
+    }
   }
 
   @override
@@ -51,6 +76,9 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                   itemCount: widget.titles.length,
                   onPageChanged: (int index) {
                     context.read<OnBoardingCubit>().onPageChanged(index);
+                    setState(() {
+                      currentPage = index;
+                    });
                   },
                 ),
                 Visibility(
@@ -105,7 +133,49 @@ class _OnBoardingScreenState extends State<OnBoardingScreen> {
                           fixedCenter: true),
                     ),
                   ),
-                )
+                ),
+                // Next button for web navigation
+                if (kIsWeb)
+                  Align(
+                    alignment: Alignment.bottomRight,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: OutlinedButton(
+                        onPressed: nextPage,
+                        style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.white),
+                            shape: const StadiumBorder()),
+                        child: const Text(
+                          'Next',
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
+                // Previous button for web navigation
+                if (kIsWeb && currentPage > 0)
+                  Align(
+                    alignment: Alignment.bottomLeft,
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: OutlinedButton(
+                        onPressed: previousPage,
+                        style: OutlinedButton.styleFrom(
+                            side: const BorderSide(color: Colors.white),
+                            shape: const StadiumBorder()),
+                        child: const Text(
+                          'Previous',
+                          style: TextStyle(
+                              fontSize: 14.0,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                    ),
+                  ),
               ],
             );
           },
